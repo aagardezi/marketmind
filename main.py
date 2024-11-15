@@ -5,12 +5,14 @@ st.title("Sample AI App")
 
 st.text("This is a sample app.")
 
+def increment_counter():
+    st.session_state.count += 1
+
 if 'count' not in st.session_state:
     st.session_state.count = 0
  
 
-increment = st.button('Increment')
-if increment:
-    st.session_state.count += 1
+st.button('Increment', on_click=increment_counter)
 
 st.write('Count = ', st.session_state.count)
+

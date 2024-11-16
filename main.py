@@ -1,5 +1,5 @@
 import streamlit as st
-from vertexai.generative_models import GenerativeModel, Part, FinishReason
+from vertexai.generative_models import GenerativeModel, Part, FinishReason, SafetySetting
 
 st.write("Hello world")
 
@@ -19,7 +19,8 @@ if "celsius" not in st.session_state:
 
 
 model = GenerativeModel(
-    "gemini-1.5-flash-002"
+    "gemini-1.5-flash-002",
+    system_instruction=["""answer in pirate lingo"""]
 )
 
 st.button('Increment Even', on_click=increment_counter)
@@ -60,3 +61,27 @@ if prompt := st.chat_input("What is up?"):
         st.session_state.messages.append({"role": "assistant", "content": response})
 
     
+generation_config = {
+    "max_output_tokens": 8192,
+    "temperature": 1,
+    "top_p": 0.95,
+}
+
+safety_settings = [
+    SafetySetting(
+        category=SafetySetting.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold=SafetySetting.HarmBlockThreshold.OFF
+    ),
+    SafetySetting(
+        category=SafetySetting.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold=SafetySetting.HarmBlockThreshold.OFF
+    ),
+    SafetySetting(
+        category=SafetySetting.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold=SafetySetting.HarmBlockThreshold.OFF
+    ),
+    SafetySetting(
+        category=SafetySetting.HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold=SafetySetting.HarmBlockThreshold.OFF
+    ),
+]

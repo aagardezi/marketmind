@@ -1,4 +1,6 @@
 import streamlit as st
+from vertexai.generative_models import GenerativeModel, Part, FinishReason
+
 st.write("Hello world")
 
 st.title("Sample AI App")
@@ -16,7 +18,9 @@ if "celsius" not in st.session_state:
     st.session_state.celsius = 50.0
 
 
- 
+model = GenerativeModel(
+    "gemini-1.5-flash-002"
+)
 
 st.button('Increment Even', on_click=increment_counter)
 
@@ -45,3 +49,13 @@ if prompt := st.chat_input("What is up?"):
         st.markdown(prompt)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        chat = model.start_chat()
+        response = chat.send_message(prompt)
+        response = response.candidates[0].content.parts[0]
+        with message_placeholder.container():
+            message_placeholder.markdown(response)
+
+    

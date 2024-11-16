@@ -44,7 +44,7 @@ safety_settings = [
 
 model = GenerativeModel(
     "gemini-1.5-flash-002",
-    system_instruction=["""answer in pirate lingo"""]
+    #system_instruction=["""answer in pirate lingo"""]
 )
 
 st.button('Increment Even', on_click=increment_counter)
@@ -79,11 +79,13 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
+        
         response = chat.send_message(prompt,generation_config=generation_config,
         safety_settings=safety_settings)
+        
         response = response.candidates[0].content.parts[0]
         with message_placeholder.container():
-            message_placeholder.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+            message_placeholder.markdown(response.text)
+        st.session_state.messages.append({"role": "assistant", "content": response.text})
 
     

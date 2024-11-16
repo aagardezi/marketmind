@@ -84,9 +84,9 @@ if prompt := st.chat_input("What is up?"):
         response = st.session_state.chat.send_message(prompt,generation_config=generation_config,
         safety_settings=safety_settings)
         
-        response = response.candidates[0].content.parts[0]
+        #response = response.candidates[0].content.parts[0]
         with message_placeholder.container():
-            message_placeholder.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
+            message_placeholder.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
     

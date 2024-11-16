@@ -56,9 +56,9 @@ sql_query_func = FunctionDeclaration(
         "properties": {
             "query": {
                 "type": "string",
-                "description": f"SQL query on a single line that will help give quantitative answers to the user's question when run on a BigQuery dataset and table. In the SQL query, always use the fully qualified dataset and table names.
+                "description": f"""SQL query on a single line that will help give quantitative answers to the user's question when run on a BigQuery dataset and table. In the SQL query, always use the fully qualified dataset and table names.
                 When writing SQL query ensure you use the Date_Time field in the where clause. LSE_NORMALISED table is the main trade table
-                RIC is the column to search for a stock",
+                RIC is the column to search for a stock""",
             }
         },
         "required": [

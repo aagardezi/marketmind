@@ -149,7 +149,7 @@ if "chat" not in st.session_state:
     st.session_state.chat = model.start_chat()
 
 if "client" not in st.session_state:
-    st.session_state.bqclient = bigquery.Client()
+    st.session_state.client = bigquery.Client()
 
 if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container

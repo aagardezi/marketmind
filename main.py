@@ -44,6 +44,8 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+chat = model.start_chat()
+
 if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container
     with st.chat_message("user"):
@@ -53,7 +55,6 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        chat = model.start_chat()
         response = chat.send_message(prompt)
         response = response.candidates[0].content.parts[0]
         with message_placeholder.container():

@@ -57,5 +57,6 @@ if prompt := st.chat_input("What is up?"):
         response = response.candidates[0].content.parts[0]
         with message_placeholder.container():
             message_placeholder.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
     

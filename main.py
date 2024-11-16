@@ -171,7 +171,7 @@ if prompt := st.chat_input("What is up?"):
 
         function_calling_in_process = True
         while function_calling_in_process:
-            try
+            try:
                 params = {}
                 for key, value in response.function_call.args.items():
                     params[key] = value

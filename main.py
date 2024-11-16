@@ -68,7 +68,8 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-chat = model.start_chat()
+if "chat" not in st.session_state:
+    st.session_state.chat = model.start_chat()
 
 if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container
@@ -80,7 +81,7 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         full_response = ""
         
-        response = chat.send_message(prompt,generation_config=generation_config,
+        response = st.session_state.chat.send_message(prompt,generation_config=generation_config,
         safety_settings=safety_settings)
         
         response = response.candidates[0].content.parts[0]

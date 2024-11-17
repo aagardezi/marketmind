@@ -3,7 +3,10 @@ import streamlit as st
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
 
-BIGQUERY_DATASET_ID = "contractanalysis"
+BIGQUERY_DATASET_ID = "lseg_data_normalised"
+PROJECT_ID = "genaillentsearch"
+
+
 
 list_datasets_func = FunctionDeclaration(
     name="list_datasets",
@@ -57,7 +60,7 @@ sql_query_func = FunctionDeclaration(
             "query": {
                 "type": "string",
                 "description": f"""SQL query on a single line that will help give quantitative answers to the user's question when run on a BigQuery dataset and table. In the SQL query, always use the fully qualified dataset and table names.
-                When writing SQL query ensure you use the Date_Time field in the where clause. LSE_NORMALISED table is the main trade table
+                When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
                 RIC is the column to search for a stock""",
             }
         },
@@ -119,8 +122,9 @@ safety_settings = [
 
 model = GenerativeModel(
     "gemini-1.5-flash-002",
-    system_instruction=["""You are a financial analysit that understands lseg tick history data and uses RIC codes to analyse stocks
-    When writing SQL query ensure you use the Date_Time field in the where clause. LSE_NORMALISED table is the main trade table"""],
+    system_instruction=[f"""You are a financial analysit that understands lseg tick history data and uses RIC codes to analyse stocks
+    When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
+                RIC is the column to search for a stock"""],
     tools=[sql_query_tool],
 )
 
@@ -155,7 +159,10 @@ if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
+    
+    prompt += "Make sure you get the data from the sql query first and then analyse it in its completeness"
     # Add user message to chat history
+
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
@@ -181,7 +188,7 @@ if prompt := st.chat_input("What is up?"):
 
                 if response.function_call.name == "list_datasets":
                     api_response = st.session_state.client.list_datasets()
-                    # api_response = BIGQUERY_DATASET_ID
+                    api_response = BIGQUERY_DATASET_ID
                     print(api_response)
                     api_response = str([dataset.dataset_id for dataset in api_response])
                     api_requests_and_responses.append(

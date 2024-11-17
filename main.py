@@ -182,6 +182,8 @@ if prompt := st.chat_input("What is up?"):
                 if response.function_call.name == "list_datasets":
                     api_response = st.session_state.client.list_datasets()
                     # api_response = BIGQUERY_DATASET_ID
+                    print(api_response)
+                    api_response = str([dataset.dataset_id for dataset in api_response])
                     api_requests_and_responses.append(
                         [response.function_call.name, params, api_response]
                     )

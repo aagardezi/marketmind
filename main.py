@@ -3,7 +3,7 @@ import streamlit as st
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
 
-BIGQUERY_DATASET_ID = "LSE_NORMALISED"
+BIGQUERY_DATASET_ID = "contractanalysis"
 
 list_datasets_func = FunctionDeclaration(
     name="list_datasets",
@@ -149,7 +149,7 @@ if "chat" not in st.session_state:
     st.session_state.chat = model.start_chat()
 
 if "client" not in st.session_state:
-    st.session_state.client = bigquery.Client(project="dbd-sdlc-prod")
+    st.session_state.client = bigquery.Client(project="genaillentsearch")
 
 if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container

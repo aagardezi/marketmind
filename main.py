@@ -262,7 +262,7 @@ if prompt := st.chat_input("What is up?"):
                     print(function_name, "\n")
 
                     # Extract the function call parameters
-                    params = {key: value for key, value in response.function_call.args.items()}
+                    # params = {key: value for key, value in response.function_call.args.items()}
                     print("#### Predicted function parameters")
                     print(params, "\n")
 

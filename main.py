@@ -230,7 +230,8 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("user"):
         st.markdown(prompt)
     
-    prompt += " If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly"
+    prompt += """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
+            If the question relates to news use the stock symbol ticker and not the RIC code."""
     # Add user message to chat history
 
     st.session_state.messages.append({"role": "user", "content": prompt})

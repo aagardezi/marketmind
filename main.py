@@ -2,6 +2,7 @@ import time
 import streamlit as st
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
+import getnews
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
@@ -70,12 +71,80 @@ sql_query_func = FunctionDeclaration(
     },
 )
 
+
+get_stock_price = FunctionDeclaration(
+    name="get_stock_price",
+    description="Fetch the current stock price of a given company",
+    parameters={
+        "type": "object",
+        "properties": {
+            "ticker": {
+                "type": "string",
+                "description": "Stock ticker symbol for a company",
+            }
+        },
+    },
+)
+
+get_company_overview = FunctionDeclaration(
+    name="get_company_overview",
+    description="Get company details and other financial data",
+    parameters={
+        "type": "object",
+        "properties": {
+            "ticker": {
+                "type": "string",
+                "description": "Stock ticker symbol for a company",
+            }
+        },
+    },
+)
+
+get_company_news = FunctionDeclaration(
+    name="get_company_news",
+    description="Get the latest news headlines for a given company.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "tickers": {
+                "type": "string",
+                "description": "Stock ticker symbol for a company",
+            }
+        },
+    },
+)
+
+get_news_with_sentiment = FunctionDeclaration(
+    name="get_news_with_sentiment",
+    description="Gets live and historical market news and sentiment data",
+    parameters={
+        "type": "object",
+        "properties": {
+            "news_topic": {
+                "type": "string",
+                "description": """News topic to learn about. Supported topics
+                               include blockchain, earnings, ipo,
+                               mergers_and_acquisitions, financial_markets,
+                               economy_fiscal, economy_monetary, economy_macro,
+                               energy_transportation, finance, life_sciences,
+                               manufacturing, real_estate, retail_wholesale,
+                               and technology""",
+            },
+        },
+    },
+)
+
+
 sql_query_tool = Tool(
     function_declarations=[
         list_datasets_func,
         list_tables_func,
         get_table_func,
         sql_query_func,
+        get_company_overview,
+        # get_stock_price,
+        get_company_news,
+        get_news_with_sentiment,
     ],
 )
 
@@ -185,6 +254,75 @@ if prompt := st.chat_input("What is up?"):
             
                 print(response.function_call.name)
                 print(params)
+
+                if response.function_call.name in getnews.function_handler.keys():
+                    # Extract the function call name
+                    function_name = response.function_call.name
+                    print("#### Predicted function name")
+                    print(function_name, "\n")
+
+                    # Extract the function call parameters
+                    params = {key: value for key, value in response.function_call.args.items()}
+                    print("#### Predicted function parameters")
+                    print(params, "\n")
+
+                    # Invoke a function that calls an external API
+                    function_api_response = getnews.function_handler[function_name](params)[
+                        :20000
+                    ]  # Stay within the input token limit
+                    print("#### API response")
+                    print(function_api_response[:500], "...", "\n")
+
+                    api_requests_and_responses.append(
+                            [response.function_call.name, params, function_api_response]
+                    )
+
+                    # Send the API response back to Gemini, which will generate a natural language summary or another function call
+                    response = st.session_state.chat.send_message(
+                        Part.from_function_response(
+                            name=function_name,
+                            response={"content": function_api_response},
+                        ),
+                    )
+
+                    backend_details += "- Function call:\n"
+                    backend_details += (
+                        "   - Function name: ```"
+                        + str(api_requests_and_responses[-1][0])
+                        + "```"
+                    )
+                    backend_details += "\n\n"
+                    backend_details += (
+                        "   - Function parameters: ```"
+                        + str(api_requests_and_responses[-1][1])
+                        + "```"
+                    )
+                    backend_details += "\n\n"
+                    backend_details += (
+                        "   - API response: ```"
+                        + str(api_requests_and_responses[-1][2])
+                        + "```"
+                    )
+                    backend_details += "\n\n"
+                    with message_placeholder.container():
+                        st.markdown(backend_details)
+
+                    response = response.candidates[0].content.parts[0]
+                    full_response = response.text
+                    with message_placeholder.container():
+                        st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+                        with st.expander("Function calls, parameters, and responses:"):
+                            st.markdown(backend_details)
+
+                    st.session_state.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": full_response,
+                            "backend_details": backend_details,
+                        }
+                    )
+
+
 
                 if response.function_call.name == "list_datasets":
                     api_response = st.session_state.client.list_datasets()

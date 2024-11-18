@@ -278,49 +278,49 @@ if prompt := st.chat_input("What is up?"):
                     )
 
                     # Send the API response back to Gemini, which will generate a natural language summary or another function call
-                    response = st.session_state.chat.send_message(
-                        Part.from_function_response(
-                            name=function_name,
-                            response={"content": function_api_response},
-                        ),
-                    )
+                    # response = st.session_state.chat.send_message(
+                    #     Part.from_function_response(
+                    #         name=function_name,
+                    #         response={"content": function_api_response},
+                    #     ),
+                    # )
 
-                    backend_details += "- Function call:\n"
-                    backend_details += (
-                        "   - Function name: ```"
-                        + str(api_requests_and_responses[-1][0])
-                        + "```"
-                    )
-                    backend_details += "\n\n"
-                    backend_details += (
-                        "   - Function parameters: ```"
-                        + str(api_requests_and_responses[-1][1])
-                        + "```"
-                    )
-                    backend_details += "\n\n"
-                    backend_details += (
-                        "   - API response: ```"
-                        + str(api_requests_and_responses[-1][2])
-                        + "```"
-                    )
-                    backend_details += "\n\n"
-                    with message_placeholder.container():
-                        st.markdown(backend_details)
+                    # backend_details += "- Function call:\n"
+                    # backend_details += (
+                    #     "   - Function name: ```"
+                    #     + str(api_requests_and_responses[-1][0])
+                    #     + "```"
+                    # )
+                    # backend_details += "\n\n"
+                    # backend_details += (
+                    #     "   - Function parameters: ```"
+                    #     + str(api_requests_and_responses[-1][1])
+                    #     + "```"
+                    # )
+                    # backend_details += "\n\n"
+                    # backend_details += (
+                    #     "   - API response: ```"
+                    #     + str(api_requests_and_responses[-1][2])
+                    #     + "```"
+                    # )
+                    # backend_details += "\n\n"
+                    # with message_placeholder.container():
+                    #     st.markdown(backend_details)
 
-                    response = response.candidates[0].content.parts[0]
-                    full_response = response.text
-                    with message_placeholder.container():
-                        st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                        with st.expander("Function calls, parameters, and responses:"):
-                            st.markdown(backend_details)
+                    # response = response.candidates[0].content.parts[0]
+                    # full_response = response.text
+                    # with message_placeholder.container():
+                    #     st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+                    #     with st.expander("Function calls, parameters, and responses:"):
+                    #         st.markdown(backend_details)
 
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": full_response,
-                            "backend_details": backend_details,
-                        }
-                    )
+                    # st.session_state.messages.append(
+                    #     {
+                    #         "role": "assistant",
+                    #         "content": full_response,
+                    #         "backend_details": backend_details,
+                    #     }
+                    # )
 
 
 

@@ -191,10 +191,10 @@ safety_settings = [
 
 model = GenerativeModel(
     "gemini-1.5-flash-002",
-    system_instruction=[f"""You are a financial analysit that understands lseg tick history data and uses RIC and stock codes to analyse stocks
+    system_instruction=[f"""You are a financial analysit that understands lseg tick history data and uses RIC and ticker symbols to analyse stocks
     When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
                 RIC is the column to search for a stock
-                When accessing news use the stock code instead of the RIC code"""],
+                When accessing news use the ticker instead of the RIC code"""],
     tools=[sql_query_tool],
 )
 

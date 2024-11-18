@@ -267,14 +267,12 @@ if prompt := st.chat_input("What is up?"):
                     print(params, "\n")
 
                     # Invoke a function that calls an external API
-                    function_api_response = getnews.function_handler[function_name](params)[
-                        :20000
-                    ]  # Stay within the input token limit
+                    api_response = getnews.function_handler[function_name](params)
                     print("#### API response")
-                    print(function_api_response[:500], "...", "\n")
+                    print(api_response[:500], "...", "\n")
 
                     api_requests_and_responses.append(
-                            [response.function_call.name, params, function_api_response]
+                            [response.function_call.name, params, api_response]
                     )
 
                     # Send the API response back to Gemini, which will generate a natural language summary or another function call

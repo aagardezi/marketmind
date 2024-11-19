@@ -142,7 +142,7 @@ symbol_lookup = FunctionDeclaration(
     },
 )
 
-symbol_lookup = FunctionDeclaration(
+company_news = FunctionDeclaration(
     name="company_news",
     description="Get the symbol for accessing news data for a company",
     parameters={

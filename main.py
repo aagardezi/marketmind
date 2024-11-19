@@ -259,10 +259,14 @@ if prompt := st.chat_input("What is up?"):
         function_calling_in_process = True
         while function_calling_in_process:
             try:
+                logging.warning("Function loop starting")
                 params = {}
-                for key, value in response.function_call.args.items():
-                    params[key] = value
-            
+                try:
+                    for key, value in response.function_call.args.items():
+                        params[key] = value
+                except:
+                    pass
+                logging.warning("Prams processing done")
                 logging.warning(response.function_call.name)
                 logging.warning(params)
 

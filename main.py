@@ -152,8 +152,8 @@ sql_query_tool = Tool(
         # # get_stock_price,
         # geminifunctions.get_company_news,
         # geminifunctions.get_news_with_sentiment,
-        # geminifunctions.symbol_lookup,
-        # geminifunctions.company_news,
+        geminifunctions.symbol_lookup,
+        geminifunctions.company_news,
     ],
 )
 

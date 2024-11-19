@@ -144,7 +144,7 @@ symbol_lookup = FunctionDeclaration(
 
 company_news = FunctionDeclaration(
     name="company_news",
-    description="Get the symbol for accessing news data for a company",
+    description="Get the company news for the symbol supplied",
     parameters={
         "type": "object",
         "properties": {

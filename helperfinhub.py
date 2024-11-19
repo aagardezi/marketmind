@@ -63,5 +63,5 @@ function_handler = {
     "symbol_lookup": symbol_lookup,
     "get_quote": get_quote,
     "company_news": company_news,
-    "news_sentiment": news_sentiment,
+    "company_profile": company_profile,
 }

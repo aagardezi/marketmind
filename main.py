@@ -6,7 +6,10 @@ import logging
 
 import helpergetnews
 import helperbqfunction
-import geminifunctions
+import geminifunctionsbq
+
+import geminifunctionfinhub
+import geminifunctiongetnews
 import helperfinhub
 
 
@@ -143,17 +146,18 @@ PROJECT_ID = "genaillentsearch"
 
 sql_query_tool = Tool(
     function_declarations=[
-        geminifunctions.sql_query_func,
-        geminifunctions.list_datasets_func,
-        geminifunctions.list_tables_func,
-        geminifunctions.get_table_func,
-        geminifunctions.sql_query_func,
-        # geminifunctions.get_company_overview,
+        geminifunctionsbq.sql_query_func,
+        geminifunctionsbq.list_datasets_func,
+        geminifunctionsbq.list_tables_func,
+        geminifunctionsbq.get_table_func,
+        geminifunctionsbq.sql_query_func,
+        # geminifunctiongetnews.get_company_overview,
         # # get_stock_price,
-        # geminifunctions.get_company_news,
-        # geminifunctions.get_news_with_sentiment,
-        geminifunctions.symbol_lookup,
-        geminifunctions.company_news,
+        # geminifunctiongetnews.get_company_news,
+        # geminifunctiongetnews.get_news_with_sentiment,
+        geminifunctionfinhub.symbol_lookup,
+        geminifunctionfinhub.company_news,
+        geminifunctionfinhub.company_profile,
     ],
 )
 

@@ -250,6 +250,7 @@ if prompt := st.chat_input("What is up?"):
         backend_details = ""
 
         print(response)
+        print("First Resonse done")
 
         function_calling_in_process = True
         while function_calling_in_process:
@@ -263,7 +264,7 @@ if prompt := st.chat_input("What is up?"):
 
                 function_name = response.function_call.name
 
-                if response.function_call.name in helpergetnews.function_handler.keys():
+                if function_name in helpergetnews.function_handler.keys():
                     # Extract the function call name
                     # function_name = response.function_call.name
                     print("#### Predicted function name")
@@ -329,7 +330,7 @@ if prompt := st.chat_input("What is up?"):
                     # )
                 
 
-                if response.function_call.name in helperbqfunction.function_handler.keys():
+                if function_name in helperbqfunction.function_handler.keys():
                     api_response = helperbqfunction.function_handler[function_name](params)
                     api_requests_and_responses.append(
                             [function_name, params, api_response]
@@ -420,7 +421,7 @@ if prompt := st.chat_input("What is up?"):
 
                 response = st.session_state.chat.send_message(
                     Part.from_function_response(
-                        name=response.function_call.name,
+                        name=function_name,
                         response={
                             "content": api_response,
                         },

@@ -263,11 +263,9 @@ if prompt := st.chat_input("What is up?"):
             try:
                 logging.warning("Function loop starting")
                 params = {}
-                try:
-                    for key, value in response.function_call.args.items():
-                        params[key] = value
-                except:
-                    pass
+                for key, value in response.function_call.args.items():
+                    params[key] = value
+                
                 logging.warning("Prams processing done")
                 logging.warning(response.function_call.name)
                 logging.warning(params)

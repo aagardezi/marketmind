@@ -1,5 +1,7 @@
 from vertexai.generative_models import FunctionDeclaration
 
+BIGQUERY_DATASET_ID = "lseg_data_normalised"
+PROJECT_ID = "genaillentsearch"
 
 list_datasets_func = FunctionDeclaration(
     name="list_datasets",

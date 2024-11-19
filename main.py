@@ -331,7 +331,7 @@ if prompt := st.chat_input("What is up?"):
                 
 
                 if function_name in helperbqfunction.function_handler.keys():
-                    api_response = helperbqfunction.function_handler[function_name](params)
+                    api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                     api_requests_and_responses.append(
                             [function_name, params, api_response]
                     )

@@ -5,7 +5,7 @@ BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
 
 
-def list_datasets(client):
+def list_datasets(client, params):
     api_response = client.list_datasets()
     api_response = BIGQUERY_DATASET_ID
     print(api_response)

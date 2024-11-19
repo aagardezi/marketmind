@@ -8,7 +8,7 @@ PROJECT_ID = "genaillentsearch"
 
 def list_datasets(client, params):
     api_response = client.list_datasets()
-    api_response = BIGQUERY_DATASET_ID
+    # api_response = BIGQUERY_DATASET_ID
     logging.warning(api_response)
     api_response = str([dataset.dataset_id for dataset in api_response])
     return api_response

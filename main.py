@@ -7,6 +7,8 @@ import logging
 import helpergetnews
 import helperbqfunction
 import geminifunctions
+import helperfinhub
+
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
@@ -146,10 +148,12 @@ sql_query_tool = Tool(
         geminifunctions.list_tables_func,
         geminifunctions.get_table_func,
         geminifunctions.sql_query_func,
-        geminifunctions.get_company_overview,
-        # get_stock_price,
-        geminifunctions.get_company_news,
-        geminifunctions.get_news_with_sentiment,
+        # geminifunctions.get_company_overview,
+        # # get_stock_price,
+        # geminifunctions.get_company_news,
+        # geminifunctions.get_news_with_sentiment,
+        # geminifunctions.symbol_lookup,
+        # geminifunctions.company_news,
     ],
 )
 
@@ -424,6 +428,12 @@ if prompt := st.chat_input("What is up?"):
                 #                 "content": error_message,
                 #             }
                 #         )
+
+                if function_name in helperfinhub.function_handler.keys():
+                    api_response = helperfinhub.function_handler[function_name](params)
+                    api_requests_and_responses.append(
+                            [function_name, params, api_response]
+                    )
 
                 logging.warning(api_response)
                 logging.warning("Making gemin call for api response")

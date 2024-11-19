@@ -248,6 +248,8 @@ if prompt := st.chat_input("What is up?"):
 
         api_requests_and_responses = []
         backend_details = ""
+        api_response = ""
+
 
         print(response)
         print("First Resonse done")

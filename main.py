@@ -214,6 +214,7 @@ model = GenerativeModel(
 
 # # This will get the value of the slider widget
 # st.write(st.session_state.celsius)
+response=None
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -421,6 +422,7 @@ if prompt := st.chat_input("What is up?"):
                 #         )
 
                 logging.warning(api_response)
+                logging.warning("Making gemin call for api response")
 
                 response = st.session_state.chat.send_message(
                     Part.from_function_response(
@@ -453,6 +455,8 @@ if prompt := st.chat_input("What is up?"):
                 backend_details += "\n\n"
                 with message_placeholder.container():
                     st.markdown(backend_details)
+                
+                logging.warning("gemini api response completed")
 
             except AttributeError:
                 function_calling_in_process = False

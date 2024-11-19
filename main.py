@@ -2,6 +2,7 @@ import time
 import streamlit as st
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
+import logging
 
 import helpergetnews
 import helperbqfunction
@@ -251,8 +252,8 @@ if prompt := st.chat_input("What is up?"):
         api_response = ""
 
 
-        print(response)
-        print("First Resonse done")
+        logging.warning(response)
+        logging.warning("First Resonse done")
 
         function_calling_in_process = True
         while function_calling_in_process:
@@ -261,26 +262,26 @@ if prompt := st.chat_input("What is up?"):
                 for key, value in response.function_call.args.items():
                     params[key] = value
             
-                print(response.function_call.name)
-                print(params)
+                logging.warning(response.function_call.name)
+                logging.warning(params)
 
                 function_name = response.function_call.name
 
                 if function_name in helpergetnews.function_handler.keys():
                     # Extract the function call name
                     # function_name = response.function_call.name
-                    print("#### Predicted function name")
-                    print(function_name, "\n")
+                    logging.warning("#### Predicted function name")
+                    logging.warning(function_name, "\n")
 
                     # Extract the function call parameters
                     # params = {key: value for key, value in response.function_call.args.items()}
-                    print("#### Predicted function parameters")
-                    print(params, "\n")
+                    logging.warning("#### Predicted function parameters")
+                    logging.warning(params, "\n")
 
                     # Invoke a function that calls an external API
                     api_response = helpergetnews.function_handler[function_name](params)
-                    print("#### API response")
-                    print(api_response[:500], "...", "\n")
+                    logging.warning("#### API response")
+                    logging.warning(api_response[:500], "...", "\n")
 
                     api_requests_and_responses.append(
                             [function_name, params, api_response]
@@ -342,7 +343,7 @@ if prompt := st.chat_input("What is up?"):
                 # if response.function_call.name == "list_datasets":
                 #     api_response = st.session_state.client.list_datasets()
                 #     api_response = BIGQUERY_DATASET_ID
-                #     print(api_response)
+                #     logging.warning(api_response)
                 #     api_response = str([dataset.dataset_id for dataset in api_response])
                 #     api_requests_and_responses.append(
                 #         [response.function_call.name, params, api_response]
@@ -419,7 +420,7 @@ if prompt := st.chat_input("What is up?"):
                 #             }
                 #         )
 
-                print(api_response)
+                logging.warning(api_response)
 
                 response = st.session_state.chat.send_message(
                     Part.from_function_response(

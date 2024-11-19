@@ -1,5 +1,6 @@
 import streamlit as st
 from google.cloud import bigquery
+import logging
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
@@ -8,7 +9,7 @@ PROJECT_ID = "genaillentsearch"
 def list_datasets(client, params):
     api_response = client.list_datasets()
     api_response = BIGQUERY_DATASET_ID
-    print(api_response)
+    logging.warning(api_response)
     api_response = str([dataset.dataset_id for dataset in api_response])
     return api_response
 

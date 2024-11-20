@@ -39,10 +39,10 @@ def company_executive(params):
     return finnhub_client.company_executive(params['symbol'])
 
 def company_profile(params):
-    return finnhub_client.company_profile2(params['symbol'])
+    return finnhub_client.company_profile2(symbol=params['symbol'])
 
 def company_profile2(params):
-    return finnhub_client.company_profile2(params['symbol'])
+    return finnhub_client.company_profile2(symbol=params['symbol'])
 
 def index_constituents(params):
     return finnhub_client.index_constituents(params['symbol'])

@@ -159,6 +159,7 @@ sql_query_tool = Tool(
         geminifunctionfinhub.company_news,
         geminifunctionfinhub.company_profile,
         geminifunctionfinhub.company_basic_financials,
+        geminifunctionfinhub.company_peers,
     ],
 )
 

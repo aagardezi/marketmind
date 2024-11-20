@@ -68,4 +68,5 @@ function_handler = {
     "company_news": company_news,
     "company_profile": company_profile,
     "company_basic_financials": company_basic_financials,
+    "company_peers": company_peers,  
 }

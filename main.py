@@ -259,7 +259,10 @@ if prompt := st.chat_input("What is up?"):
         
         response = st.session_state.chat.send_message(prompt,generation_config=generation_config,
         safety_settings=safety_settings)
-        
+        logging.warning("This is the start")
+        logging.warning(response)
+        logging.warning("The start is done")
+
         response = response.candidates[0].content.parts[0]
 
         api_requests_and_responses = []

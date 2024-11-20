@@ -279,6 +279,7 @@ if prompt := st.chat_input("What is up?"):
                     params[key] = value
                 
                 logging.warning("Prams processing done")
+                logging.warning(response)
                 logging.warning(response.function_call.name)
                 logging.warning(params)
 

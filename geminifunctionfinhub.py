@@ -66,7 +66,7 @@ company_basic_financials = FunctionDeclaration(
 
 company_peers = FunctionDeclaration(
     name="company_peers",
-    description="Get the company peers for the symbol supplied",
+    description="Get the list of peers for the symbol supplied",
     parameters={
         "type": "object",
         "properties": {

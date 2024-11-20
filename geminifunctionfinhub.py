@@ -49,3 +49,17 @@ company_profile = FunctionDeclaration(
         },
     },
 )
+
+company_basic_financials = FunctionDeclaration(
+    name="company_basic_financials",
+    description="Get the company financials for the symbol supplied, Use it when doing a detaild analysis of a company",
+    parameters={
+        "type": "object",
+        "properties": {
+            "symbol": {
+                "type": "string",
+                "description": "Symbol for the company",
+            },
+        },
+    },
+)

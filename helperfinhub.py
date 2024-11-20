@@ -59,9 +59,13 @@ def index_constituents_prices(params):
 def index_constituents_profiles(params):
     return finnhub_client.index_constituents_profiles(params['symbol'])
 
+def company_basic_financials(params):
+    return finnhub_client.company_basic_financials(params['symbol'],'all')
+
 function_handler = {
     "symbol_lookup": symbol_lookup,
     "get_quote": get_quote,
     "company_news": company_news,
     "company_profile": company_profile,
+    "company_basic_financials": company_basic_financials,
 }

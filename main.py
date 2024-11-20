@@ -443,6 +443,8 @@ if prompt := st.chat_input("What is up?"):
                             [function_name, params, api_response]
                     )
 
+                logging.warning("Function Response complete")
+
                 logging.warning(api_response)
                 logging.warning("Making gemin call for api response")
 

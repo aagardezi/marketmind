@@ -248,8 +248,10 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("user"):
         st.markdown(prompt)
     
-    prompt += """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
+    prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
             If the question relates to news use the stock symbol ticker and not the RIC code."""
+
+    # prompt += prompt_enhancement
     # Add user message to chat history
 
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -257,7 +259,7 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         full_response = ""
         
-        response = st.session_state.chat.send_message(prompt,generation_config=generation_config,
+        response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
         safety_settings=safety_settings)
         logging.warning("This is the start")
         logging.warning(response)

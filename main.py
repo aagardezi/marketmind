@@ -208,138 +208,11 @@ else:
                                 [function_name, params, api_response]
                         )
 
-                        # Send the API response back to Gemini, which will generate a natural language summary or another function call
-                        # response = st.session_state.chat.send_message(
-                        #     Part.from_function_response(
-                        #         name=function_name,
-                        #         response={"content": function_api_response},
-                        #     ),
-                        # )
-
-                        # backend_details += "- Function call:\n"
-                        # backend_details += (
-                        #     "   - Function name: ```"
-                        #     + str(api_requests_and_responses[-1][0])
-                        #     + "```"
-                        # )
-                        # backend_details += "\n\n"
-                        # backend_details += (
-                        #     "   - Function parameters: ```"
-                        #     + str(api_requests_and_responses[-1][1])
-                        #     + "```"
-                        # )
-                        # backend_details += "\n\n"
-                        # backend_details += (
-                        #     "   - API response: ```"
-                        #     + str(api_requests_and_responses[-1][2])
-                        #     + "```"
-                        # )
-                        # backend_details += "\n\n"
-                        # with message_placeholder.container():
-                        #     st.markdown(backend_details)
-
-                        # response = response.candidates[0].content.parts[0]
-                        # full_response = response.text
-                        # with message_placeholder.container():
-                        #     st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                        #     with st.expander("Function calls, parameters, and responses:"):
-                        #         st.markdown(backend_details)
-
-                        # st.session_state.messages.append(
-                        #     {
-                        #         "role": "assistant",
-                        #         "content": full_response,
-                        #         "backend_details": backend_details,
-                        #     }
-                        # )
-                    
-
                     if function_name in helperbqfunction.function_handler.keys():
                         api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                         api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
-
-
-                    # if response.function_call.name == "list_datasets":
-                    #     api_response = st.session_state.client.list_datasets()
-                    #     api_response = BIGQUERY_DATASET_ID
-                    #     logging.warning(api_response)
-                    #     api_response = str([dataset.dataset_id for dataset in api_response])
-                    #     api_requests_and_responses.append(
-                    #         [response.function_call.name, params, api_response]
-                    #     )
-
-                    # if response.function_call.name == "list_tables":
-                    #     api_response = st.session_state.client.list_tables(params["dataset_id"])
-                    #     api_response = str([table.table_id for table in api_response])
-                    #     api_requests_and_responses.append(
-                    #         [response.function_call.name, params, api_response]
-                    #     )
-
-                    # if response.function_call.name == "get_table":
-                    #     api_response = st.session_state.client.get_table(params["table_id"])
-                    #     api_response = api_response.to_api_repr()
-                    #     api_requests_and_responses.append(
-                    #         [
-                    #             response.function_call.name,
-                    #             params,
-                    #             [
-                    #                 str(api_response.get("description", "")),
-                    #                 str(
-                    #                     [
-                    #                         column["name"]
-                    #                         for column in api_response["schema"][
-                    #                             "fields"
-                    #                         ]
-                    #                     ]
-                    #                 ),
-                    #             ],
-                    #         ]
-                    #     )
-                    #     api_response = str(api_response)
-
-                    # if response.function_call.name == "sql_query":
-                    #     job_config = bigquery.QueryJobConfig(
-                    #         maximum_bytes_billed=100000000
-                    #     )  # Data limit per query job
-                    #     try:
-                    #         cleaned_query = (
-                    #             params["query"]
-                    #             .replace("\\n", " ")
-                    #             .replace("\n", "")
-                    #             .replace("\\", "")
-                    #         )
-                    #         query_job = st.session_state.client.query(
-                    #             cleaned_query, job_config=job_config
-                    #         )
-                    #         api_response = query_job.result()
-                    #         api_response = str([dict(row) for row in api_response])
-                    #         api_response = api_response.replace("\\", "").replace(
-                    #             "\n", ""
-                    #         )
-                    #         api_requests_and_responses.append(
-                    #             [response.function_call.name, params, api_response]
-                    #         )
-                    #     except Exception as e:
-                    #         error_message = f"""
-                    #         We're having trouble running this SQL query. This
-                    #         could be due to an invalid query or the structure of
-                    #         the data. Try rephrasing your question to help the
-                    #         model generate a valid query. Details:
-
-                    #         {str(e)}"""
-                    #         st.error(error_message)
-                    #         api_response = error_message
-                    #         api_requests_and_responses.append(
-                    #             [response.function_call.name, params, api_response]
-                    #         )
-                    #         st.session_state.messages.append(
-                    #             {
-                    #                 "role": "assistant",
-                    #                 "content": error_message,
-                    #             }
-                    #         )
 
                     if function_name in helperfinhub.function_handler.keys():
                         api_response = helperfinhub.function_handler[function_name](params)
@@ -350,7 +223,6 @@ else:
                     logging.warning("Function Response complete")
 
                     logging.warning(api_response)
-                    logging.warning("Making gemin call for api response")
 
                     parts.append(Part.from_function_response(
                         name=function_name,
@@ -380,6 +252,8 @@ else:
                     backend_details += "\n\n"
                     with message_placeholder.container():
                         st.markdown(backend_details)
+
+                logging.warning("Making gemin call for api response")
 
                 response = st.session_state.chat.send_message(
                     parts
@@ -434,138 +308,11 @@ else:
                                     [function_name, params, api_response]
                             )
 
-                            # Send the API response back to Gemini, which will generate a natural language summary or another function call
-                            # response = st.session_state.chat.send_message(
-                            #     Part.from_function_response(
-                            #         name=function_name,
-                            #         response={"content": function_api_response},
-                            #     ),
-                            # )
-
-                            # backend_details += "- Function call:\n"
-                            # backend_details += (
-                            #     "   - Function name: ```"
-                            #     + str(api_requests_and_responses[-1][0])
-                            #     + "```"
-                            # )
-                            # backend_details += "\n\n"
-                            # backend_details += (
-                            #     "   - Function parameters: ```"
-                            #     + str(api_requests_and_responses[-1][1])
-                            #     + "```"
-                            # )
-                            # backend_details += "\n\n"
-                            # backend_details += (
-                            #     "   - API response: ```"
-                            #     + str(api_requests_and_responses[-1][2])
-                            #     + "```"
-                            # )
-                            # backend_details += "\n\n"
-                            # with message_placeholder.container():
-                            #     st.markdown(backend_details)
-
-                            # response = response.candidates[0].content.parts[0]
-                            # full_response = response.text
-                            # with message_placeholder.container():
-                            #     st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                            #     with st.expander("Function calls, parameters, and responses:"):
-                            #         st.markdown(backend_details)
-
-                            # st.session_state.messages.append(
-                            #     {
-                            #         "role": "assistant",
-                            #         "content": full_response,
-                            #         "backend_details": backend_details,
-                            #     }
-                            # )
-                        
-
                         if function_name in helperbqfunction.function_handler.keys():
                             api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                             api_requests_and_responses.append(
                                     [function_name, params, api_response]
                             )
-
-
-                        # if response.function_call.name == "list_datasets":
-                        #     api_response = st.session_state.client.list_datasets()
-                        #     api_response = BIGQUERY_DATASET_ID
-                        #     logging.warning(api_response)
-                        #     api_response = str([dataset.dataset_id for dataset in api_response])
-                        #     api_requests_and_responses.append(
-                        #         [response.function_call.name, params, api_response]
-                        #     )
-
-                        # if response.function_call.name == "list_tables":
-                        #     api_response = st.session_state.client.list_tables(params["dataset_id"])
-                        #     api_response = str([table.table_id for table in api_response])
-                        #     api_requests_and_responses.append(
-                        #         [response.function_call.name, params, api_response]
-                        #     )
-
-                        # if response.function_call.name == "get_table":
-                        #     api_response = st.session_state.client.get_table(params["table_id"])
-                        #     api_response = api_response.to_api_repr()
-                        #     api_requests_and_responses.append(
-                        #         [
-                        #             response.function_call.name,
-                        #             params,
-                        #             [
-                        #                 str(api_response.get("description", "")),
-                        #                 str(
-                        #                     [
-                        #                         column["name"]
-                        #                         for column in api_response["schema"][
-                        #                             "fields"
-                        #                         ]
-                        #                     ]
-                        #                 ),
-                        #             ],
-                        #         ]
-                        #     )
-                        #     api_response = str(api_response)
-
-                        # if response.function_call.name == "sql_query":
-                        #     job_config = bigquery.QueryJobConfig(
-                        #         maximum_bytes_billed=100000000
-                        #     )  # Data limit per query job
-                        #     try:
-                        #         cleaned_query = (
-                        #             params["query"]
-                        #             .replace("\\n", " ")
-                        #             .replace("\n", "")
-                        #             .replace("\\", "")
-                        #         )
-                        #         query_job = st.session_state.client.query(
-                        #             cleaned_query, job_config=job_config
-                        #         )
-                        #         api_response = query_job.result()
-                        #         api_response = str([dict(row) for row in api_response])
-                        #         api_response = api_response.replace("\\", "").replace(
-                        #             "\n", ""
-                        #         )
-                        #         api_requests_and_responses.append(
-                        #             [response.function_call.name, params, api_response]
-                        #         )
-                        #     except Exception as e:
-                        #         error_message = f"""
-                        #         We're having trouble running this SQL query. This
-                        #         could be due to an invalid query or the structure of
-                        #         the data. Try rephrasing your question to help the
-                        #         model generate a valid query. Details:
-
-                        #         {str(e)}"""
-                        #         st.error(error_message)
-                        #         api_response = error_message
-                        #         api_requests_and_responses.append(
-                        #             [response.function_call.name, params, api_response]
-                        #         )
-                        #         st.session_state.messages.append(
-                        #             {
-                        #                 "role": "assistant",
-                        #                 "content": error_message,
-                        #             }
-                        #         )
 
                         if function_name in helperfinhub.function_handler.keys():
                             api_response = helperfinhub.function_handler[function_name](params)

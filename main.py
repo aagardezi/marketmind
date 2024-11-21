@@ -98,7 +98,7 @@ if "modelname" not in st.session_state:
    st.session_state.modelname = "gemini-1.5-pro-002"
    select_model()
    logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
-if "model_name" in st.session_state:
+else:
     logging.warning("model name session state initialised")
 
     st.title(f"""Company Agent: built using {st.session_state.modelname}""")

@@ -26,7 +26,13 @@ def select_model():
     index=0,
     placeholder="Select a Model",
     key="model_name"
-)
+    
+    )
+    st.button("Choose Model", on_click=model_selected)
+
+def model_selected():
+    st.rerun()
+
 
 
 sql_query_tool = Tool(

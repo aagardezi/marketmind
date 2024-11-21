@@ -29,7 +29,6 @@ def select_model():
     
     )
     if st.button("Choose Model"):
-        st.session_state.model_name = model_name
         st.rerun()
 
 
@@ -96,6 +95,7 @@ safety_settings = [
 
 
 if "model_name" not in st.session_state:
+   st.session_state.model_name = "gemini-1.5-pro-002"
    select_model()
 else:
     

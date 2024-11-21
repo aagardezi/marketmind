@@ -588,6 +588,40 @@ else:
                         )
                         response = response.candidates[0].content.parts[0]
 
+                        logging.warning("Function Response complete")
+
+                        logging.warning(api_response)
+                        logging.warning("Making gemin call for api response")
+
+                        parts.append(Part.from_function_response(
+                            name=function_name,
+                            response={
+                                "content": api_response,
+                            },
+                            ),
+                        )
+                        backend_details += "- Function call:\n"
+                        backend_details += (
+                            "   - Function name: ```"
+                            + str(api_requests_and_responses[-1][0])
+                            + "```"
+                        )
+                        backend_details += "\n\n"
+                        backend_details += (
+                            "   - Function parameters: ```"
+                            + str(api_requests_and_responses[-1][1])
+                            + "```"
+                        )
+                        backend_details += "\n\n"
+                        backend_details += (
+                            "   - API response: ```"
+                            + str(api_requests_and_responses[-1][2])
+                            + "```"
+                        )
+                        backend_details += "\n\n"
+                        with message_placeholder.container():
+                            st.markdown(backend_details)
+
                         
                         logging.warning("gemini api response completed")
 

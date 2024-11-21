@@ -20,15 +20,14 @@ PROJECT_ID = "genaillentsearch"
 
 @st.dialog("Choose the Model")
 def select_model():
-    model_name = st.selectbox(
-    "Select the Gemini version you would like to use",
-    ("gemini-1.5-pro-002", "gemini-1.5-flash-002"),
-    index=0,
-    placeholder="Select a Model",
-    key="model_name"
-    
+    modelname = st.selectbox(
+        "Select the Gemini version you would like to use",
+        ("gemini-1.5-pro-002", "gemini-1.5-flash-002"),
+        index=0,
+        placeholder="Select a Model",
     )
     if st.button("Choose Model"):
+        st.session_state.modelname = modelname
         st.rerun()
 
 
@@ -94,17 +93,19 @@ safety_settings = [
 
 
 
-if "model_name" not in st.session_state:
-   st.session_state.model_name = "gemini-1.5-pro-002"
+if "modelname" not in st.session_state:
+   logging.warning("model name session state not initialised")
+   st.session_state.modelname = "gemini-1.5-pro-002"
    select_model()
-else:
-    
+   logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
+if "model_name" in st.session_state:
+    logging.warning("model name session state initialised")
 
-    st.title(f"""Company Agent: built using {st.session_state.model_name}""")
+    st.title(f"""Company Agent: built using {st.session_state.modelname}""")
 
     model = GenerativeModel(
         # "gemini-1.5-pro-002",
-        st.session_state.model_name,
+        st.session_state.modelname,
         system_instruction=[f"""You are a financial analysit that understands lseg tick history data and uses RIC and ticker symbols to analyse stocks
         When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
                     RIC is the column to search for a stock

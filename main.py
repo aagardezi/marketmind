@@ -29,6 +29,7 @@ def select_model():
     
     )
     if st.button("Choose Model"):
+        st.session_state.model_name = model_name
         st.rerun()
 
 

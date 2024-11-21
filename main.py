@@ -166,6 +166,8 @@ else:
             logging.warning(response)
             logging.warning("The start is done")
 
+            logging.warning(f"""Length of functions is {response.candidates[0].content.parts}""")
+            
             response = response.candidates[0].content.parts[0]
 
             api_requests_and_responses = []

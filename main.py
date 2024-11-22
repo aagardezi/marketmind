@@ -183,7 +183,7 @@ else:
                         for key, value in response.function_call.args.items():
                             params[key] = value
                     except AttributeError:
-                        pass
+                        continue
                     
                     logging.warning("Prams processing done")
                     logging.warning(response)

@@ -177,6 +177,7 @@ else:
                 parts=[]
                 for response in response.candidates[0].content.parts:
                     logging.warning("Function loop starting")
+                    logging.warning(response)
                     params = {}
                     for key, value in response.function_call.args.items():
                         params[key] = value

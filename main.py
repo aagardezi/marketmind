@@ -370,6 +370,7 @@ else:
                         response = response.candidates[0].content.parts[0]
 
                     except AttributeError:
+                        logging.warning(Exception)
                         function_calling_in_process = False
 
             time.sleep(3)

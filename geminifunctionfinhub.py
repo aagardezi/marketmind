@@ -77,3 +77,25 @@ company_peers = FunctionDeclaration(
         },
     },
 )
+
+insider_sentiment = FunctionDeclaration(
+    name="insider_sentiment",
+    description="Get the Insider sentiment for the symbol supplied to undersand if it is positive or negative",
+    parameters={
+        "type": "object",
+        "properties": {
+            "symbol": {
+                "type": "string",
+                "description": "Symbol for the company",
+            },
+            "from_date": {
+                "type": "string",
+                "description": "Start date for news data"
+            },
+            "to_date": {
+                "type": "string",
+                "description": "End date for news data"
+            },
+        },
+    },
+)

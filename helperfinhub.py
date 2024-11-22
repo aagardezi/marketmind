@@ -17,6 +17,12 @@ def news_sentiment(params):
 def company_peers(params):
     return finnhub_client.company_peers(params['symbol'])
 
+def insider_sentiment(params):
+    return finnhub_client.insider_sentiment(params['symbol'], params['from_date'], params['to_date'])
+
+
+
+
 def recommendation_trends(params):
     return finnhub_client.recommendation_trends(params['symbol'])
 
@@ -29,8 +35,7 @@ def recommendation_earnings(params):
 def recommendation_insider(params):
     return finnhub_client.recommendation_insider(params['symbol'])
 
-def recommendation_insider_sentiment(params):
-    return finnhub_client.recommendation_insider_sentiment(params['symbol'])
+
 
 def recommendation_insider_trading(params):
     return finnhub_client.recommendation_insider_trading(params['symbol'])
@@ -68,5 +73,6 @@ function_handler = {
     "company_news": company_news,
     "company_profile": company_profile,
     "company_basic_financials": company_basic_financials,
-    "company_peers": company_peers,  
+    "company_peers": company_peers,
+    "insider_sentiment": insider_sentiment,
 }

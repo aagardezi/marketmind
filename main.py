@@ -179,8 +179,11 @@ else:
                     logging.warning("Function loop starting")
                     logging.warning(response)
                     params = {}
-                    for key, value in response.function_call.args.items():
-                        params[key] = value
+                    try:
+                        for key, value in response.function_call.args.items():
+                            params[key] = value
+                    except AttributeError:
+                        pass
                     
                     logging.warning("Prams processing done")
                     logging.warning(response)

@@ -296,6 +296,7 @@ else:
                         function_name = response.function_call.name
 
                         if function_name in helpergetnews.function_handler.keys():
+                            logging.warning("Getnews function found")
                             # Extract the function call name
                             # function_name = response.function_call.name
                             logging.warning("#### Predicted function name")
@@ -316,12 +317,14 @@ else:
                             )
 
                         if function_name in helperbqfunction.function_handler.keys():
+                            logging.warning("BQ function found")
                             api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                             api_requests_and_responses.append(
                                     [function_name, params, api_response]
                             )
 
                         if function_name in helperfinhub.function_handler.keys():
+                            logging.warning("finhub function found")
                             api_response = helperfinhub.function_handler[function_name](params)
                             api_requests_and_responses.append(
                                     [function_name, params, api_response]

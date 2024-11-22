@@ -339,14 +339,6 @@ else:
 
                         logging.warning(api_response)
                         logging.warning("Making gemin call for api response")
-
-                        parts.append(Part.from_function_response(
-                            name=function_name,
-                            response={
-                                "content": api_response,
-                            },
-                            ),
-                        )
                         backend_details += "- Function call:\n"
                         backend_details += (
                             "   - Function name: ```"

@@ -333,7 +333,6 @@ else:
                                 },
                             ),
                         )
-                        response = response.candidates[0].content.parts[0]
 
                         logging.warning("Function Response complete")
 

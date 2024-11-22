@@ -336,8 +336,6 @@ else:
 
                         logging.warning("Function Response complete")
 
-                        logging.warning(api_response)
-                        logging.warning("Making gemin call for api response")
                         backend_details += "- Function call:\n"
                         backend_details += (
                             "   - Function name: ```"
@@ -362,6 +360,7 @@ else:
 
                         
                         logging.warning("gemini api response completed")
+                        response = response.candidates[0].content.parts[0]
 
                     except AttributeError:
                         function_calling_in_process = False

@@ -18,7 +18,7 @@ def company_peers(params):
     return finnhub_client.company_peers(params['symbol'])
 
 def insider_sentiment(params):
-    return finnhub_client.insider_sentiment(params['symbol'], params['from_date'], params['to_date'])
+    return finnhub_client.stock_insider_sentiment(params['symbol'], params['from_date'], params['to_date'])
 
 
 

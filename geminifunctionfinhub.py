@@ -90,11 +90,11 @@ insider_sentiment = FunctionDeclaration(
             },
             "from_date": {
                 "type": "string",
-                "description": "Start date for news data"
+                "description": "Start date for insider sentiment data"
             },
             "to_date": {
                 "type": "string",
-                "description": "End date for news data"
+                "description": "End date for insider sentiment data"
             },
         },
     },

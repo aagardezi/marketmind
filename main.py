@@ -116,7 +116,7 @@ else:
                             When accessing news use the symbol for the company instead of the RIC cod.
                             You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup before any subsequent functions.
                             When doing an analysis of the company, include the company profile, company news, company basic financials and an analysis of the peers
-                            Also get the insider sentiment and add a section on that."""],
+                            Also get the insider sentiment and add a section on that. Include a section on SEC filings."""],
         tools=[sql_query_tool],
     )
 

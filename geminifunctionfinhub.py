@@ -121,3 +121,25 @@ financials_reported = FunctionDeclaration(
         },
     },
 )
+
+sec_filings = FunctionDeclaration(
+    name="sec_filings",
+    description="Get the SEC Filings reported for the symbol supplied",
+    parameters={
+        "type": "object",
+        "properties": {
+            "symbol": {
+                "type": "string",
+                "description": "Symbol for the company",
+            },
+            "from_date": {
+                "type": "string",
+                "description": "Start date for insider sentiment data"
+            },
+            "to_date": {
+                "type": "string",
+                "description": "End date for insider sentiment data"
+            },
+        },
+    },
+)

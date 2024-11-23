@@ -1,4 +1,5 @@
 import finnhub
+import helpercode
 
 finnhub_client = finnhub.Client(api_key="cstluhpr01qj0ou20db0cstluhpr01qj0ou20dbg")
 
@@ -25,6 +26,21 @@ def company_basic_financials(params):
 
 def financials_reported(params):
     return finnhub_client.financials_reported(symbol=params['symbol'], _from=params['from_date'], to=params['to_date'] )
+
+def sec_filings(params):
+    secfilings = finnhub_client.filings(symbol=params['symbol'], _from=params['from_date'], to=params['to_date'])
+    parsed_filings = []
+    for filing in sec_filings:
+        parsed_filings.append({"accessNumber":filing['accessNumber'], 
+                               "symbol": params['symbol'], 
+                               "filedDate": filing['filedDate'],
+                               "report": helpercode.get_text_from_url(filing['reportUrl'])})
+    
+    return parsed_filings
+
+
+
+
 
 #######################################################
 
@@ -81,4 +97,5 @@ function_handler = {
     "company_peers": company_peers,
     "insider_sentiment": insider_sentiment,
     "financials_reported": financials_reported,
+    "sec_filings": sec_filings,
 }

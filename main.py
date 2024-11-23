@@ -51,6 +51,7 @@ sql_query_tool = Tool(
         geminifunctionfinhub.company_peers,
         geminifunctionfinhub.insider_sentiment,
         geminifunctionfinhub.financials_reported,
+        geminifunctionfinhub.sec_filings,
     ],
 )
 

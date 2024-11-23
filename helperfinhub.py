@@ -20,7 +20,13 @@ def company_peers(params):
 def insider_sentiment(params):
     return finnhub_client.stock_insider_sentiment(params['symbol'], params['from_date'], params['to_date'])
 
+def company_basic_financials(params):
+    return finnhub_client.company_basic_financials(params['symbol'],'all')
 
+def financials_reported(params):
+    return finnhub_client.financials_reported(symbol=params['symbol'], _from=params['from_date'], to=params['to_date'] )
+
+#######################################################
 
 
 def recommendation_trends(params):
@@ -64,8 +70,7 @@ def index_constituents_prices(params):
 def index_constituents_profiles(params):
     return finnhub_client.index_constituents_profiles(params['symbol'])
 
-def company_basic_financials(params):
-    return finnhub_client.company_basic_financials(params['symbol'],'all')
+
 
 function_handler = {
     "symbol_lookup": symbol_lookup,
@@ -75,4 +80,5 @@ function_handler = {
     "company_basic_financials": company_basic_financials,
     "company_peers": company_peers,
     "insider_sentiment": insider_sentiment,
+    "financials_reported": financials_reported,
 }

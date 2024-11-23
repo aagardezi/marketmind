@@ -50,6 +50,7 @@ sql_query_tool = Tool(
         geminifunctionfinhub.company_basic_financials,
         geminifunctionfinhub.company_peers,
         geminifunctionfinhub.insider_sentiment,
+        geminifunctionfinhub.financials_reported,
     ],
 )
 
@@ -107,7 +108,7 @@ else:
     model = GenerativeModel(
         # "gemini-1.5-pro-002",
         st.session_state.modelname,
-        system_instruction=[f"""You are a financial analyst that understands financial data. Do the analysis like and asset management investor
+        system_instruction=[f"""You are a financial analyst that understands financial data. Do the analysis like and asset management investor and create a detaild report
                             lseg tick history data and uses RIC and ticker symbols to analyse stocks
                             When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
                             RIC is the column to search for a stock

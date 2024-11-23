@@ -99,3 +99,25 @@ insider_sentiment = FunctionDeclaration(
         },
     },
 )
+
+financials_reported = FunctionDeclaration(
+    name="financials_reported",
+    description="Get the financials reported for the symbol supplied",
+    parameters={
+        "type": "object",
+        "properties": {
+            "symbol": {
+                "type": "string",
+                "description": "Symbol for the company",
+            },
+            "from_date": {
+                "type": "string",
+                "description": "Start date for insider sentiment data"
+            },
+            "to_date": {
+                "type": "string",
+                "description": "End date for insider sentiment data"
+            },
+        },
+    },
+)

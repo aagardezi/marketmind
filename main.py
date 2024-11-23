@@ -195,25 +195,25 @@ else:
 
                     function_name = response.function_call.name
 
-                    if function_name in helpergetnews.function_handler.keys():
-                        # Extract the function call name
-                        # function_name = response.function_call.name
-                        logging.warning("#### Predicted function name")
-                        logging.warning(function_name, "\n")
+                    # if function_name in helpergetnews.function_handler.keys():
+                    #     # Extract the function call name
+                    #     # function_name = response.function_call.name
+                    #     logging.warning("#### Predicted function name")
+                    #     logging.warning(function_name, "\n")
 
-                        # Extract the function call parameters
-                        # params = {key: value for key, value in response.function_call.args.items()}
-                        logging.warning("#### Predicted function parameters")
-                        logging.warning(params, "\n")
+                    #     # Extract the function call parameters
+                    #     # params = {key: value for key, value in response.function_call.args.items()}
+                    #     logging.warning("#### Predicted function parameters")
+                    #     logging.warning(params, "\n")
 
-                        # Invoke a function that calls an external API
-                        api_response = helpergetnews.function_handler[function_name](params)
-                        logging.warning("#### API response")
-                        logging.warning(api_response[:500], "...", "\n")
+                    #     # Invoke a function that calls an external API
+                    #     api_response = helpergetnews.function_handler[function_name](params)
+                    #     logging.warning("#### API response")
+                    #     logging.warning(api_response[:500], "...", "\n")
 
-                        api_requests_and_responses.append(
-                                [function_name, params, api_response]
-                        )
+                    #     api_requests_and_responses.append(
+                    #             [function_name, params, api_response]
+                    #     )
 
                     if function_name in helperbqfunction.function_handler.keys():
                         api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
@@ -295,26 +295,26 @@ else:
 
                         function_name = response.function_call.name
 
-                        if function_name in helpergetnews.function_handler.keys():
-                            logging.warning("Getnews function found")
-                            # Extract the function call name
-                            # function_name = response.function_call.name
-                            logging.warning("#### Predicted function name")
-                            logging.warning(function_name, "\n")
+                        # if function_name in helpergetnews.function_handler.keys():
+                        #     logging.warning("Getnews function found")
+                        #     # Extract the function call name
+                        #     # function_name = response.function_call.name
+                        #     logging.warning("#### Predicted function name")
+                        #     logging.warning(function_name, "\n")
 
-                            # Extract the function call parameters
-                            # params = {key: value for key, value in response.function_call.args.items()}
-                            logging.warning("#### Predicted function parameters")
-                            logging.warning(params, "\n")
+                        #     # Extract the function call parameters
+                        #     # params = {key: value for key, value in response.function_call.args.items()}
+                        #     logging.warning("#### Predicted function parameters")
+                        #     logging.warning(params, "\n")
 
-                            # Invoke a function that calls an external API
-                            api_response = helpergetnews.function_handler[function_name](params)
-                            logging.warning("#### API response")
-                            logging.warning(api_response[:500], "...", "\n")
+                        #     # Invoke a function that calls an external API
+                        #     api_response = helpergetnews.function_handler[function_name](params)
+                        #     logging.warning("#### API response")
+                        #     logging.warning(api_response[:500], "...", "\n")
 
-                            api_requests_and_responses.append(
-                                    [function_name, params, api_response]
-                            )
+                        #     api_requests_and_responses.append(
+                        #             [function_name, params, api_response]
+                        #     )
 
                         if function_name in helperbqfunction.function_handler.keys():
                             logging.warning("BQ function found")

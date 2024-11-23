@@ -372,7 +372,10 @@ else:
 
                         
                         logging.warning("gemini api response completed")
+                        logging.warning(response)
+                        logging.warning("next call ready")
                         response = response.candidates[0].content.parts[0]
+
 
                     except AttributeError:
                         logging.warning(Exception)

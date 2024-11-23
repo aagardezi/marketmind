@@ -31,10 +31,11 @@ def sec_filings(params):
     secfilings = finnhub_client.filings(symbol=params['symbol'], _from=params['from_date'], to=params['to_date'])
     parsed_filings = []
     for filing in secfilings:
-        parsed_filings.append({"accessNumber":filing['accessNumber'], 
-                               "symbol": params['symbol'], 
-                               "filedDate": filing['filedDate'],
-                               "report": helpercode.get_text_from_url(filing['reportUrl'])})
+        if filing['form'] in ['10-Q', '8-K']:
+            parsed_filings.append({"accessNumber":filing['accessNumber'], 
+                                   "symbol": params['symbol'], 
+                                   "filedDate": filing['filedDate'],
+                                   "report": helpercode.get_text_from_url(filing['reportUrl'])})
     
     return parsed_filings
 

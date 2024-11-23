@@ -30,7 +30,7 @@ def financials_reported(params):
 def sec_filings(params):
     secfilings = finnhub_client.filings(symbol=params['symbol'], _from=params['from_date'], to=params['to_date'])
     parsed_filings = []
-    for filing in sec_filings:
+    for filing in secfilings:
         parsed_filings.append({"accessNumber":filing['accessNumber'], 
                                "symbol": params['symbol'], 
                                "filedDate": filing['filedDate'],

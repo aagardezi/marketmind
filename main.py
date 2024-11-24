@@ -114,6 +114,7 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
     # Access the secret version.
     response = client.access_secret_version(request={"name": name})
 
+    logging.warning(response.payload.data.decode("UTF-8"))
     # Return the decoded payload.
     return response.payload.data.decode("UTF-8")
 
@@ -124,6 +125,7 @@ def create_temp_credentials_file(credentials_json):
   with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
     json.dump(credentials_json, temp_file)
     temp_file_path = temp_file.name
+    logging.warning(temp_file_path)
   return temp_file_path
 
 

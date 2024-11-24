@@ -11,3 +11,4 @@ google-auth-oauthlib
 finnhub-python
 streamlit-google-auth
 BeautifulSoup4
+google-cloud-secret-manager

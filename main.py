@@ -96,6 +96,29 @@ safety_settings = [
 
 
 
+def handle_api_response(message_placeholder, api_requests_and_responses, backend_details):
+    backend_details += "- Function call:\n"
+    backend_details += (
+                        "   - Function name: ```"
+                        + str(api_requests_and_responses[-1][0])
+                        + "```"
+                    )
+    backend_details += "\n\n"
+    backend_details += (
+                        "   - Function parameters: ```"
+                        + str(api_requests_and_responses[-1][1])
+                        + "```"
+                    )
+    backend_details += "\n\n"
+    backend_details += (
+                        "   - API response: ```"
+                        + str(api_requests_and_responses[-1][2])
+                        + "```"
+                    )
+    backend_details += "\n\n"
+    with message_placeholder.container():
+        st.markdown(backend_details)
+
 if "modelname" not in st.session_state:
    logging.warning("model name session state not initialised")
    st.session_state.modelname = "gemini-1.5-pro-002"
@@ -197,26 +220,6 @@ else:
 
                     function_name = response.function_call.name
 
-                    # if function_name in helpergetnews.function_handler.keys():
-                    #     # Extract the function call name
-                    #     # function_name = response.function_call.name
-                    #     logging.warning("#### Predicted function name")
-                    #     logging.warning(function_name, "\n")
-
-                    #     # Extract the function call parameters
-                    #     # params = {key: value for key, value in response.function_call.args.items()}
-                    #     logging.warning("#### Predicted function parameters")
-                    #     logging.warning(params, "\n")
-
-                    #     # Invoke a function that calls an external API
-                    #     api_response = helpergetnews.function_handler[function_name](params)
-                    #     logging.warning("#### API response")
-                    #     logging.warning(api_response[:500], "...", "\n")
-
-                    #     api_requests_and_responses.append(
-                    #             [function_name, params, api_response]
-                    #     )
-
                     if function_name in helperbqfunction.function_handler.keys():
                         api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                         api_requests_and_responses.append(
@@ -240,27 +243,8 @@ else:
                         },
                         ),
                     )
-                    backend_details += "- Function call:\n"
-                    backend_details += (
-                        "   - Function name: ```"
-                        + str(api_requests_and_responses[-1][0])
-                        + "```"
-                    )
-                    backend_details += "\n\n"
-                    backend_details += (
-                        "   - Function parameters: ```"
-                        + str(api_requests_and_responses[-1][1])
-                        + "```"
-                    )
-                    backend_details += "\n\n"
-                    backend_details += (
-                        "   - API response: ```"
-                        + str(api_requests_and_responses[-1][2])
-                        + "```"
-                    )
-                    backend_details += "\n\n"
-                    with message_placeholder.container():
-                        st.markdown(backend_details)
+
+                    handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
                 logging.warning("Making gemin call for api response")
 
@@ -348,28 +332,29 @@ else:
 
                         logging.warning("Function Response complete")
 
-                        backend_details += "- Function call:\n"
-                        backend_details += (
-                            "   - Function name: ```"
-                            + str(api_requests_and_responses[-1][0])
-                            + "```"
-                        )
-                        backend_details += "\n\n"
-                        backend_details += (
-                            "   - Function parameters: ```"
-                            + str(api_requests_and_responses[-1][1])
-                            + "```"
-                        )
-                        backend_details += "\n\n"
-                        backend_details += (
-                            "   - API response: ```"
-                            + str(api_requests_and_responses[-1][2])
-                            + "```"
-                        )
-                        backend_details += "\n\n"
-                        with message_placeholder.container():
-                            st.markdown(backend_details)
+                        # backend_details += "- Function call:\n"
+                        # backend_details += (
+                        #     "   - Function name: ```"
+                        #     + str(api_requests_and_responses[-1][0])
+                        #     + "```"
+                        # )
+                        # backend_details += "\n\n"
+                        # backend_details += (
+                        #     "   - Function parameters: ```"
+                        #     + str(api_requests_and_responses[-1][1])
+                        #     + "```"
+                        # )
+                        # backend_details += "\n\n"
+                        # backend_details += (
+                        #     "   - API response: ```"
+                        #     + str(api_requests_and_responses[-1][2])
+                        #     + "```"
+                        # )
+                        # backend_details += "\n\n"
+                        # with message_placeholder.container():
+                        #     st.markdown(backend_details)
 
+                        handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
                         
                         logging.warning("gemini api response completed")
                         logging.warning(response)

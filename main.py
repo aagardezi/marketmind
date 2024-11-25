@@ -20,7 +20,9 @@ import helperfinhub
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
 
+st.set_page_config(layout="wide")
 
+c1, c2 = st.columns((1, 3))
 
 @st.dialog("Choose the Model")
 def select_model():
@@ -165,10 +167,6 @@ authenticator = Authenticate(
     cookie_key='this_is_secret',
     redirect_uri='https://streamlitdemo-884152252139.us-central1.run.app/',
 )
-
-st.set_page_config(layout="wide")
-
-c1, c2 = st.columns((1, 3))
 
 # if not st.session_state.get('connected', False):
 #     authorization_url = authenticator.get_authorization_url()

@@ -2,6 +2,7 @@ import time
 import tempfile
 import json
 import streamlit as st
+from streamlit_float import *
 from streamlit_google_auth import Authenticate
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
@@ -21,6 +22,7 @@ BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
 
 st.set_page_config(layout="wide")
+float_init(theme=True, include_unstable_primary=False)
 
 c1, c2 = st.columns((1, 3))
 

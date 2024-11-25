@@ -166,12 +166,17 @@ authenticator = Authenticate(
     redirect_uri='https://streamlitdemo-884152252139.us-central1.run.app/',
 )
 
-if not st.session_state.get('connected', False):
-    authorization_url = authenticator.get_authorization_url()
-    st.markdown(f'[Login]({authorization_url})')
-    st.link_button('Login', authorization_url)
+# if not st.session_state.get('connected', False):
+#     authorization_url = authenticator.get_authorization_url()
+#     st.markdown(f'[Login]({authorization_url})')
+#     st.link_button('Login', authorization_url)
 
-else:
+authenticator.check_authentification()
+
+# Create the login button
+authenticator.login()
+
+if st.session_state['connected']:
     st.image(st.session_state['user_info'].get('picture'))
     st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     st.write(f"Your email is {st.session_state['user_info'].get('email')}")

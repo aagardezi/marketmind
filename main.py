@@ -123,7 +123,7 @@ def create_temp_credentials_file(credentials_json):
     Writes a JSON object to a temporary file and returns the file path.
     """
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix='.json') as temp_file:
-        temp_file.write(json.dump(credentials_json, temp_file))
+        temp_file.write(credentials_json)
     temp_file_path = temp_file.name
     logging.warning(temp_file_path)
     

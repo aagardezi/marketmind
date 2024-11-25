@@ -171,10 +171,12 @@ authenticator = Authenticate(
 #     st.markdown(f'[Login]({authorization_url})')
 #     st.link_button('Login', authorization_url)
 
-authenticator.check_authentification()
+time.sleep(5)
+if not st.session_state['connected']:
+    authenticator.check_authentification()
 
 # Create the login button
-authenticator.login()
+    authenticator.login()
 
 if st.session_state['connected']:
     st.image(st.session_state['user_info'].get('picture'))

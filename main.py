@@ -119,17 +119,19 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
     return response.payload.data.decode("UTF-8")
 
 def create_temp_credentials_file(credentials_json):
-  """
-  Writes a JSON object to a temporary file and returns the file path.
-  """
-  with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix='.json') as temp_file:
-    json.dump(credentials_json, temp_file)
+    """
+    Writes a JSON object to a temporary file and returns the file path.
+    """
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix='.json') as temp_file:
+        temp_file.write(json.dump(credentials_json, temp_file))
     temp_file_path = temp_file.name
     logging.warning(temp_file_path)
+    
     with open(temp_file_path, 'r', encoding='utf-8') as f:  # Opens the file in read mode with UTF-8 encoding
         contents = f.read()
         logging.warning(contents)
-  return temp_file_path
+
+    return temp_file_path
 
 
 

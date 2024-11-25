@@ -166,6 +166,10 @@ authenticator = Authenticate(
     redirect_uri='https://streamlitdemo-884152252139.us-central1.run.app/',
 )
 
+st.set_page_config(layout="wide")
+
+c1, c2 = st.columns((1, 3))
+
 # if not st.session_state.get('connected', False):
 #     authorization_url = authenticator.get_authorization_url()
 #     st.markdown(f'[Login]({authorization_url})')
@@ -181,162 +185,103 @@ if not st.session_state['connected']:
 
 if st.session_state['connected']:
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
-    if st.button('Log out'):
-        authenticator.logout()
-    if "modelname" not in st.session_state:
-        logging.warning("model name session state not initialised")
-        st.session_state.modelname = "gemini-1.5-pro-002"
-        select_model()
-        logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
-    else:
-        logging.warning("model name session state initialised")
+    with c1:
+        if st.button('Log out'):
+            authenticator.logout()
+    with c2:
+        if "modelname" not in st.session_state:
+            logging.warning("model name session state not initialised")
+            st.session_state.modelname = "gemini-1.5-pro-002"
+            select_model()
+            logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
+        else:
+            logging.warning("model name session state initialised")
 
-        st.title(f"""Hello: {st.session_state['user_info'].get('name')}! Company Agent: built using {st.session_state.modelname}""")
+            st.title(f"""Hello: {st.session_state['user_info'].get('name')}! Company Agent: built using {st.session_state.modelname}""")
 
-        model = GenerativeModel(
-            # "gemini-1.5-pro-002",
-            st.session_state.modelname,
-            system_instruction=[f"""You are a financial analyst that understands financial data. Do the analysis like and asset management investor and create a detaild report
-                                lseg tick history data and uses RIC and ticker symbols to analyse stocks
-                                When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
-                                RIC is the column to search for a stock
-                                When accessing news use the symbol for the company instead of the RIC cod.
-                                You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup before any subsequent functions.
-                                When doing an analysis of the company, include the company profile, company news, company basic financials and an analysis of the peers
-                                Also get the insider sentiment and add a section on that. Include a section on SEC filings."""],
-            tools=[sql_query_tool],
-        )
+            model = GenerativeModel(
+                # "gemini-1.5-pro-002",
+                st.session_state.modelname,
+                system_instruction=[f"""You are a financial analyst that understands financial data. Do the analysis like and asset management investor and create a detaild report
+                                    lseg tick history data and uses RIC and ticker symbols to analyse stocks
+                                    When writing SQL query ensure you use the Date_Time field in the where clause. {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
+                                    RIC is the column to search for a stock
+                                    When accessing news use the symbol for the company instead of the RIC cod.
+                                    You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup before any subsequent functions.
+                                    When doing an analysis of the company, include the company profile, company news, company basic financials and an analysis of the peers
+                                    Also get the insider sentiment and add a section on that. Include a section on SEC filings."""],
+                tools=[sql_query_tool],
+            )
 
-        # st.button('Increment Even', on_click=increment_counter)
+            # st.button('Increment Even', on_click=increment_counter)
 
-        # st.write('Count = ', st.session_state.count)
+            # st.write('Count = ', st.session_state.count)
 
-        # st.slider(
-        #     "Temperature in Celsius",
-        #     min_value=-100.0,
-        #     max_value=100.0,
-        #     key="celsius"
-        # )
+            # st.slider(
+            #     "Temperature in Celsius",
+            #     min_value=-100.0,
+            #     max_value=100.0,
+            #     key="celsius"
+            # )
 
-        # # This will get the value of the slider widget
-        # st.write(st.session_state.celsius)
-        response=None
+            # # This will get the value of the slider widget
+            # st.write(st.session_state.celsius)
+            response=None
 
 
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+            if "messages" not in st.session_state:
+                st.session_state.messages = []
 
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+            for message in st.session_state.messages:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
 
-        if "chat" not in st.session_state:
-            st.session_state.chat = model.start_chat()
+            if "chat" not in st.session_state:
+                st.session_state.chat = model.start_chat()
 
-        if "client" not in st.session_state:
-            st.session_state.client = bigquery.Client(project="genaillentsearch")
+            if "client" not in st.session_state:
+                st.session_state.client = bigquery.Client(project="genaillentsearch")
 
-        if prompt := st.chat_input("What is up?"):
-            # Display user message in chat message container
-            with st.chat_message("user"):
-                st.markdown(prompt)
-            
-            prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
-                    If the question relates to news use the stock symbol ticker and not the RIC code."""
-
-            # prompt += prompt_enhancement
-            # Add user message to chat history
-
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("assistant"):
-                message_placeholder = st.empty()
-                full_response = ""
+            if prompt := st.chat_input("What is up?"):
+                # Display user message in chat message container
+                with st.chat_message("user"):
+                    st.markdown(prompt)
                 
-                response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
-                safety_settings=safety_settings)
-                logging.warning("This is the start")
-                logging.warning(response)
-                logging.warning("The start is done")
+                prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
+                        If the question relates to news use the stock symbol ticker and not the RIC code."""
 
-                logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+                # prompt += prompt_enhancement
+                # Add user message to chat history
 
-                api_requests_and_responses = []
-                backend_details = ""
-                api_response = ""
-
-                if len(response.candidates[0].content.parts) >1:
-                    logging.warning("Starting parallal function resonse loop")
-                    parts=[]
-                    for response in response.candidates[0].content.parts:
-                        logging.warning("Function loop starting")
-                        logging.warning(response)
-                        params = {}
-                        try:
-                            for key, value in response.function_call.args.items():
-                                params[key] = value
-                        except AttributeError:
-                            continue
-                        
-                        logging.warning("Prams processing done")
-                        logging.warning(response)
-                        logging.warning(response.function_call.name)
-                        logging.warning(params)
-
-                        function_name = response.function_call.name
-
-                        if function_name in helperbqfunction.function_handler.keys():
-                            api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                            api_requests_and_responses.append(
-                                    [function_name, params, api_response]
-                            )
-
-                        if function_name in helperfinhub.function_handler.keys():
-                            api_response = helperfinhub.function_handler[function_name](params)
-                            api_requests_and_responses.append(
-                                    [function_name, params, api_response]
-                            )
-
-                        logging.warning("Function Response complete")
-
-                        logging.warning(api_response)
-
-                        parts.append(Part.from_function_response(
-                            name=function_name,
-                            response={
-                                "content": api_response,
-                            },
-                            ),
-                        )
-
-                        handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-
-                    logging.warning("Making gemin call for api response")
-
-                    response = st.session_state.chat.send_message(
-                        parts
-                    )
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                with st.chat_message("assistant"):
+                    message_placeholder = st.empty()
+                    full_response = ""
                     
-                    logging.warning("gemini api response completed")
-
-
-                else:
-                    response = response.candidates[0].content.parts[0]
-
-                    # api_requests_and_responses = []
-                    # backend_details = ""
-                    # api_response = ""
-
-
+                    response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
+                    safety_settings=safety_settings)
+                    logging.warning("This is the start")
                     logging.warning(response)
-                    logging.warning("First Resonse done")
+                    logging.warning("The start is done")
 
-                    function_calling_in_process = True
-                    while function_calling_in_process:
-                        try:
+                    logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+
+                    api_requests_and_responses = []
+                    backend_details = ""
+                    api_response = ""
+
+                    if len(response.candidates[0].content.parts) >1:
+                        logging.warning("Starting parallal function resonse loop")
+                        parts=[]
+                        for response in response.candidates[0].content.parts:
                             logging.warning("Function loop starting")
+                            logging.warning(response)
                             params = {}
-                            for key, value in response.function_call.args.items():
-                                params[key] = value
+                            try:
+                                for key, value in response.function_call.args.items():
+                                    params[key] = value
+                            except AttributeError:
+                                continue
                             
                             logging.warning("Prams processing done")
                             logging.warning(response)
@@ -345,36 +290,13 @@ if st.session_state['connected']:
 
                             function_name = response.function_call.name
 
-                            # if function_name in helpergetnews.function_handler.keys():
-                            #     logging.warning("Getnews function found")
-                            #     # Extract the function call name
-                            #     # function_name = response.function_call.name
-                            #     logging.warning("#### Predicted function name")
-                            #     logging.warning(function_name, "\n")
-
-                            #     # Extract the function call parameters
-                            #     # params = {key: value for key, value in response.function_call.args.items()}
-                            #     logging.warning("#### Predicted function parameters")
-                            #     logging.warning(params, "\n")
-
-                            #     # Invoke a function that calls an external API
-                            #     api_response = helpergetnews.function_handler[function_name](params)
-                            #     logging.warning("#### API response")
-                            #     logging.warning(api_response[:500], "...", "\n")
-
-                            #     api_requests_and_responses.append(
-                            #             [function_name, params, api_response]
-                            #     )
-
                             if function_name in helperbqfunction.function_handler.keys():
-                                logging.warning("BQ function found")
                                 api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                                 api_requests_and_responses.append(
                                         [function_name, params, api_response]
                                 )
 
                             if function_name in helperfinhub.function_handler.keys():
-                                logging.warning("finhub function found")
                                 api_response = helperfinhub.function_handler[function_name](params)
                                 api_requests_and_responses.append(
                                         [function_name, params, api_response]
@@ -383,73 +305,157 @@ if st.session_state['connected']:
                             logging.warning("Function Response complete")
 
                             logging.warning(api_response)
-                            logging.warning("Making gemin call for api response")
 
-                            response = st.session_state.chat.send_message(
-                                Part.from_function_response(
-                                    name=function_name,
-                                    response={
-                                        "content": api_response,
-                                    },
+                            parts.append(Part.from_function_response(
+                                name=function_name,
+                                response={
+                                    "content": api_response,
+                                },
                                 ),
                             )
 
-                            logging.warning("Function Response complete")
-
-                            # backend_details += "- Function call:\n"
-                            # backend_details += (
-                            #     "   - Function name: ```"
-                            #     + str(api_requests_and_responses[-1][0])
-                            #     + "```"
-                            # )
-                            # backend_details += "\n\n"
-                            # backend_details += (
-                            #     "   - Function parameters: ```"
-                            #     + str(api_requests_and_responses[-1][1])
-                            #     + "```"
-                            # )
-                            # backend_details += "\n\n"
-                            # backend_details += (
-                            #     "   - API response: ```"
-                            #     + str(api_requests_and_responses[-1][2])
-                            #     + "```"
-                            # )
-                            # backend_details += "\n\n"
-                            # with message_placeholder.container():
-                            #     st.markdown(backend_details)
-
                             handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-                            
-                            logging.warning("gemini api response completed")
-                            logging.warning(response)
-                            logging.warning("next call ready")
-                            response = response.candidates[0].content.parts[0]
+
+                        logging.warning("Making gemin call for api response")
+
+                        response = st.session_state.chat.send_message(
+                            parts
+                        )
+                        
+                        logging.warning("gemini api response completed")
 
 
-                        except AttributeError:
-                            logging.warning(Exception)
-                            function_calling_in_process = False
+                    else:
+                        response = response.candidates[0].content.parts[0]
 
-                time.sleep(3)
-
-                full_response = response.text
-                with message_placeholder.container():
-                    st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                    with st.expander("Function calls, parameters, and responses:"):
-                        st.markdown(backend_details)
-
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": full_response,
-                        "backend_details": backend_details,
-                    }
-                )
+                        # api_requests_and_responses = []
+                        # backend_details = ""
+                        # api_response = ""
 
 
+                        logging.warning(response)
+                        logging.warning("First Resonse done")
 
-                # with message_placeholder.container():
-                #     message_placeholder.markdown(response.text)
-                # st.session_state.messages.append({"role": "assistant", "content": response.text})
+                        function_calling_in_process = True
+                        while function_calling_in_process:
+                            try:
+                                logging.warning("Function loop starting")
+                                params = {}
+                                for key, value in response.function_call.args.items():
+                                    params[key] = value
+                                
+                                logging.warning("Prams processing done")
+                                logging.warning(response)
+                                logging.warning(response.function_call.name)
+                                logging.warning(params)
+
+                                function_name = response.function_call.name
+
+                                # if function_name in helpergetnews.function_handler.keys():
+                                #     logging.warning("Getnews function found")
+                                #     # Extract the function call name
+                                #     # function_name = response.function_call.name
+                                #     logging.warning("#### Predicted function name")
+                                #     logging.warning(function_name, "\n")
+
+                                #     # Extract the function call parameters
+                                #     # params = {key: value for key, value in response.function_call.args.items()}
+                                #     logging.warning("#### Predicted function parameters")
+                                #     logging.warning(params, "\n")
+
+                                #     # Invoke a function that calls an external API
+                                #     api_response = helpergetnews.function_handler[function_name](params)
+                                #     logging.warning("#### API response")
+                                #     logging.warning(api_response[:500], "...", "\n")
+
+                                #     api_requests_and_responses.append(
+                                #             [function_name, params, api_response]
+                                #     )
+
+                                if function_name in helperbqfunction.function_handler.keys():
+                                    logging.warning("BQ function found")
+                                    api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+                                    api_requests_and_responses.append(
+                                            [function_name, params, api_response]
+                                    )
+
+                                if function_name in helperfinhub.function_handler.keys():
+                                    logging.warning("finhub function found")
+                                    api_response = helperfinhub.function_handler[function_name](params)
+                                    api_requests_and_responses.append(
+                                            [function_name, params, api_response]
+                                    )
+
+                                logging.warning("Function Response complete")
+
+                                logging.warning(api_response)
+                                logging.warning("Making gemin call for api response")
+
+                                response = st.session_state.chat.send_message(
+                                    Part.from_function_response(
+                                        name=function_name,
+                                        response={
+                                            "content": api_response,
+                                        },
+                                    ),
+                                )
+
+                                logging.warning("Function Response complete")
+
+                                # backend_details += "- Function call:\n"
+                                # backend_details += (
+                                #     "   - Function name: ```"
+                                #     + str(api_requests_and_responses[-1][0])
+                                #     + "```"
+                                # )
+                                # backend_details += "\n\n"
+                                # backend_details += (
+                                #     "   - Function parameters: ```"
+                                #     + str(api_requests_and_responses[-1][1])
+                                #     + "```"
+                                # )
+                                # backend_details += "\n\n"
+                                # backend_details += (
+                                #     "   - API response: ```"
+                                #     + str(api_requests_and_responses[-1][2])
+                                #     + "```"
+                                # )
+                                # backend_details += "\n\n"
+                                # with message_placeholder.container():
+                                #     st.markdown(backend_details)
+
+                                handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+                                
+                                logging.warning("gemini api response completed")
+                                logging.warning(response)
+                                logging.warning("next call ready")
+                                response = response.candidates[0].content.parts[0]
+
+
+                            except AttributeError:
+                                logging.warning(Exception)
+                                function_calling_in_process = False
+
+                    time.sleep(3)
+
+                    full_response = response.text
+                    with message_placeholder.container():
+                        st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+                        with st.expander("Function calls, parameters, and responses:"):
+                            st.markdown(backend_details)
+
+                    st.session_state.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": full_response,
+                            "backend_details": backend_details,
+                        }
+                    )
+
+
+
+                    # with message_placeholder.container():
+                    #     message_placeholder.markdown(response.text)
+                    # st.session_state.messages.append({"role": "assistant", "content": response.text})
 
             

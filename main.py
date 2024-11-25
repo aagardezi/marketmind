@@ -179,9 +179,7 @@ if not st.session_state['connected']:
     authenticator.login()
 
 if st.session_state['connected']:
-    st.image(st.session_state['user_info'].get('picture'))
-    st.write(f"Hello, {st.session_state['user_info'].get('name')}")
-    st.write(f"Your email is {st.session_state['user_info'].get('email')}")
+    # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     if st.button('Log out'):
         authenticator.logout()
     if "modelname" not in st.session_state:
@@ -192,7 +190,7 @@ if st.session_state['connected']:
     else:
         logging.warning("model name session state initialised")
 
-        st.title(f"""Company Agent: built using {st.session_state.modelname}""")
+        st.title(f"""Hello: {st.session_state['user_info'].get('name')}! Company Agent: built using {st.session_state.modelname}""")
 
         model = GenerativeModel(
             # "gemini-1.5-pro-002",

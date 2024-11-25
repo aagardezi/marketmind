@@ -161,7 +161,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
 
 authenticator = Authenticate(
     secret_credentials_path=create_temp_credentials_file(access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
-    cookie_name='my_cookie_name',
+    cookie_name='logincookie',
     cookie_key='this_is_secret',
     redirect_uri='https://streamlitdemo-884152252139.us-central1.run.app/',
 )

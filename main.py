@@ -126,6 +126,9 @@ def create_temp_credentials_file(credentials_json):
     json.dump(credentials_json, temp_file)
     temp_file_path = temp_file.name
     logging.warning(temp_file_path)
+    with open(temp_file_path, 'r', encoding='utf-8') as f:  # Opens the file in read mode with UTF-8 encoding
+        contents = f.read()
+        logging.warning(contents)
   return temp_file_path
 
 

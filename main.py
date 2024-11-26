@@ -162,6 +162,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
     backend_details += "\n\n"
     with message_placeholder.container():
         st.markdown(backend_details)
+    return backend_details
 
 authenticator = Authenticate(
     secret_credentials_path=create_temp_credentials_file(access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
@@ -319,7 +320,7 @@ if st.session_state['connected']:
                                     ),
                                 )
 
-                                handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+                                backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
                             logging.warning("Making gemin call for api response")
 
@@ -429,7 +430,7 @@ if st.session_state['connected']:
                                     # with message_placeholder.container():
                                     #     st.markdown(backend_details)
 
-                                    handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+                                    backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
                                     
                                     logging.warning("gemini api response completed")
                                     logging.warning(response)

@@ -186,8 +186,8 @@ if not st.session_state['connected']:
 if st.session_state['connected']:
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     with c1:
+        st.image(st.session_state['user_info'].get('picture'))
         if st.button('Log out'):
-            st.image(st.session_state['user_info'].get('picture'))
             authenticator.logout()
     with c2:
         if "modelname" not in st.session_state:

@@ -178,8 +178,8 @@ authenticator = Authenticate(
 
 
 if not st.session_state['connected']:
-    time.sleep(5)
     authenticator.check_authentification()
+    time.sleep(5)
 
 # Create the login button
     authenticator.login()

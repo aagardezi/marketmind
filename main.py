@@ -4,6 +4,7 @@ import json
 import streamlit as st
 from streamlit_float import *
 from streamlit_google_auth import Authenticate
+import vertexai
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
 from google.cloud import secretmanager
@@ -200,7 +201,7 @@ if st.session_state['connected']:
             logging.warning("model name session state initialised")
 
             st.title(f"""Hello: {st.session_state['user_info'].get('name')}! Company Agent: built using {st.session_state.modelname}""")
-
+            vertexai.init(project="fisd-hackathon24lon-9675", location="us-central1")
             model = GenerativeModel(
                 # "gemini-1.5-pro-002",
                 st.session_state.modelname,

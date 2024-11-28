@@ -52,6 +52,128 @@ def get_project_id():
     print(f"Error: Could not determine the project ID. {e}")
     return None
 
+def handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
+    logging.warning("Starting parallal function resonse loop")
+    parts=[]
+    for response in response.candidates[0].content.parts:
+        logging.warning("Function loop starting")
+        logging.warning(response)
+        params = {}
+        try:
+            for key, value in response.function_call.args.items():
+                params[key] = value
+        except AttributeError:
+            continue
+                
+        logging.warning("Prams processing done")
+        logging.warning(response)
+        logging.warning(response.function_call.name)
+        logging.warning(params)
+
+        function_name = response.function_call.name
+
+        if function_name in helperbqfunction.function_handler.keys():
+            api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+            api_requests_and_responses.append(
+                            [function_name, params, api_response]
+                    )
+
+        if function_name in helperfinhub.function_handler.keys():
+            api_response = helperfinhub.function_handler[function_name](params)
+            api_requests_and_responses.append(
+                            [function_name, params, api_response]
+                    )
+
+        logging.warning("Function Response complete")
+
+        logging.warning(api_response)
+
+        parts.append(Part.from_function_response(
+                    name=function_name,
+                    response={
+                        "content": api_response,
+                    },
+                    ),
+                )
+
+        backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+
+    logging.warning("Making gemin call for api response")
+
+    response = st.session_state.chat.send_message(
+                parts
+            )
+            
+    logging.warning("gemini api response completed")
+    return response,backend_details
+
+
+def handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
+    response = response.candidates[0].content.parts[0]
+
+    logging.warning(response)
+    logging.warning("First Resonse done")
+
+    function_calling_in_process = True
+    while function_calling_in_process:
+        try:
+            logging.warning("Function loop starting")
+            params = {}
+            for key, value in response.function_call.args.items():
+                params[key] = value
+                    
+            logging.warning("Prams processing done")
+            logging.warning(response)
+            logging.warning(response.function_call.name)
+            logging.warning(params)
+
+            function_name = response.function_call.name
+
+            if function_name in helperbqfunction.function_handler.keys():
+                logging.warning("BQ function found")
+                api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+                api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
+
+            if function_name in helperfinhub.function_handler.keys():
+                logging.warning("finhub function found")
+                api_response = helperfinhub.function_handler[function_name](params)
+                api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
+
+            logging.warning("Function Response complete")
+
+            logging.warning(api_response)
+            logging.warning("Making gemin call for api response")
+
+            response = st.session_state.chat.send_message(
+                        Part.from_function_response(
+                            name=function_name,
+                            response={
+                                "content": api_response,
+                            },
+                        ),
+                    )
+
+            logging.warning("Function Response complete")
+
+
+            backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+                    
+            logging.warning("gemini api response completed")
+            logging.warning(response)
+            logging.warning("next call ready")
+            response = response.candidates[0].content.parts[0]
+
+
+        except AttributeError:
+            logging.warning(Exception)
+            function_calling_in_process = False
+    return response,backend_details
+
+
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = get_project_id()
@@ -290,172 +412,179 @@ if st.session_state['connected']:
                         api_requests_and_responses = []
                         backend_details = ""
                         api_response = ""
-
                         if len(response.candidates[0].content.parts) >1:
-                            logging.warning("Starting parallal function resonse loop")
-                            parts=[]
-                            for response in response.candidates[0].content.parts:
-                                logging.warning("Function loop starting")
-                                logging.warning(response)
-                                params = {}
-                                try:
-                                    for key, value in response.function_call.args.items():
-                                        params[key] = value
-                                except AttributeError:
-                                    continue
-                                
-                                logging.warning("Prams processing done")
-                                logging.warning(response)
-                                logging.warning(response.function_call.name)
-                                logging.warning(params)
-
-                                function_name = response.function_call.name
-
-                                if function_name in helperbqfunction.function_handler.keys():
-                                    api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                                    api_requests_and_responses.append(
-                                            [function_name, params, api_response]
-                                    )
-
-                                if function_name in helperfinhub.function_handler.keys():
-                                    api_response = helperfinhub.function_handler[function_name](params)
-                                    api_requests_and_responses.append(
-                                            [function_name, params, api_response]
-                                    )
-
-                                logging.warning("Function Response complete")
-
-                                logging.warning(api_response)
-
-                                parts.append(Part.from_function_response(
-                                    name=function_name,
-                                    response={
-                                        "content": api_response,
-                                    },
-                                    ),
-                                )
-
-                                backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-
-                            logging.warning("Making gemin call for api response")
-
-                            response = st.session_state.chat.send_message(
-                                parts
-                            )
-                            
-                            logging.warning("gemini api response completed")
+                            response, backend_details = handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
 
                         else:
-                            response = response.candidates[0].content.parts[0]
-
-                            # api_requests_and_responses = []
-                            # backend_details = ""
-                            # api_response = ""
+                            response, backend_details = handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
 
-                            logging.warning(response)
-                            logging.warning("First Resonse done")
+                        # if len(response.candidates[0].content.parts) >1:
+                        #     logging.warning("Starting parallal function resonse loop")
+                        #     parts=[]
+                        #     for response in response.candidates[0].content.parts:
+                        #         logging.warning("Function loop starting")
+                        #         logging.warning(response)
+                        #         params = {}
+                        #         try:
+                        #             for key, value in response.function_call.args.items():
+                        #                 params[key] = value
+                        #         except AttributeError:
+                        #             continue
+                                
+                        #         logging.warning("Prams processing done")
+                        #         logging.warning(response)
+                        #         logging.warning(response.function_call.name)
+                        #         logging.warning(params)
 
-                            function_calling_in_process = True
-                            while function_calling_in_process:
-                                try:
-                                    logging.warning("Function loop starting")
-                                    params = {}
-                                    for key, value in response.function_call.args.items():
-                                        params[key] = value
+                        #         function_name = response.function_call.name
+
+                        #         if function_name in helperbqfunction.function_handler.keys():
+                        #             api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+                        #             api_requests_and_responses.append(
+                        #                     [function_name, params, api_response]
+                        #             )
+
+                        #         if function_name in helperfinhub.function_handler.keys():
+                        #             api_response = helperfinhub.function_handler[function_name](params)
+                        #             api_requests_and_responses.append(
+                        #                     [function_name, params, api_response]
+                        #             )
+
+                        #         logging.warning("Function Response complete")
+
+                        #         logging.warning(api_response)
+
+                        #         parts.append(Part.from_function_response(
+                        #             name=function_name,
+                        #             response={
+                        #                 "content": api_response,
+                        #             },
+                        #             ),
+                        #         )
+
+                        #         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+
+                        #     logging.warning("Making gemin call for api response")
+
+                        #     response = st.session_state.chat.send_message(
+                        #         parts
+                        #     )
+                            
+                        #     logging.warning("gemini api response completed")
+
+
+                        # else:
+                        #     response = response.candidates[0].content.parts[0]
+
+                        #     # api_requests_and_responses = []
+                        #     # backend_details = ""
+                        #     # api_response = ""
+
+
+                        #     logging.warning(response)
+                        #     logging.warning("First Resonse done")
+
+                        #     function_calling_in_process = True
+                        #     while function_calling_in_process:
+                        #         try:
+                        #             logging.warning("Function loop starting")
+                        #             params = {}
+                        #             for key, value in response.function_call.args.items():
+                        #                 params[key] = value
                                     
-                                    logging.warning("Prams processing done")
-                                    logging.warning(response)
-                                    logging.warning(response.function_call.name)
-                                    logging.warning(params)
+                        #             logging.warning("Prams processing done")
+                        #             logging.warning(response)
+                        #             logging.warning(response.function_call.name)
+                        #             logging.warning(params)
 
-                                    function_name = response.function_call.name
+                        #             function_name = response.function_call.name
 
-                                    # if function_name in helpergetnews.function_handler.keys():
-                                    #     logging.warning("Getnews function found")
-                                    #     # Extract the function call name
-                                    #     # function_name = response.function_call.name
-                                    #     logging.warning("#### Predicted function name")
-                                    #     logging.warning(function_name, "\n")
+                        #             # if function_name in helpergetnews.function_handler.keys():
+                        #             #     logging.warning("Getnews function found")
+                        #             #     # Extract the function call name
+                        #             #     # function_name = response.function_call.name
+                        #             #     logging.warning("#### Predicted function name")
+                        #             #     logging.warning(function_name, "\n")
 
-                                    #     # Extract the function call parameters
-                                    #     # params = {key: value for key, value in response.function_call.args.items()}
-                                    #     logging.warning("#### Predicted function parameters")
-                                    #     logging.warning(params, "\n")
+                        #             #     # Extract the function call parameters
+                        #             #     # params = {key: value for key, value in response.function_call.args.items()}
+                        #             #     logging.warning("#### Predicted function parameters")
+                        #             #     logging.warning(params, "\n")
 
-                                    #     # Invoke a function that calls an external API
-                                    #     api_response = helpergetnews.function_handler[function_name](params)
-                                    #     logging.warning("#### API response")
-                                    #     logging.warning(api_response[:500], "...", "\n")
+                        #             #     # Invoke a function that calls an external API
+                        #             #     api_response = helpergetnews.function_handler[function_name](params)
+                        #             #     logging.warning("#### API response")
+                        #             #     logging.warning(api_response[:500], "...", "\n")
 
-                                    #     api_requests_and_responses.append(
-                                    #             [function_name, params, api_response]
-                                    #     )
+                        #             #     api_requests_and_responses.append(
+                        #             #             [function_name, params, api_response]
+                        #             #     )
 
-                                    if function_name in helperbqfunction.function_handler.keys():
-                                        logging.warning("BQ function found")
-                                        api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                                        api_requests_and_responses.append(
-                                                [function_name, params, api_response]
-                                        )
+                        #             if function_name in helperbqfunction.function_handler.keys():
+                        #                 logging.warning("BQ function found")
+                        #                 api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+                        #                 api_requests_and_responses.append(
+                        #                         [function_name, params, api_response]
+                        #                 )
 
-                                    if function_name in helperfinhub.function_handler.keys():
-                                        logging.warning("finhub function found")
-                                        api_response = helperfinhub.function_handler[function_name](params)
-                                        api_requests_and_responses.append(
-                                                [function_name, params, api_response]
-                                        )
+                        #             if function_name in helperfinhub.function_handler.keys():
+                        #                 logging.warning("finhub function found")
+                        #                 api_response = helperfinhub.function_handler[function_name](params)
+                        #                 api_requests_and_responses.append(
+                        #                         [function_name, params, api_response]
+                        #                 )
 
-                                    logging.warning("Function Response complete")
+                        #             logging.warning("Function Response complete")
 
-                                    logging.warning(api_response)
-                                    logging.warning("Making gemin call for api response")
+                        #             logging.warning(api_response)
+                        #             logging.warning("Making gemin call for api response")
 
-                                    response = st.session_state.chat.send_message(
-                                        Part.from_function_response(
-                                            name=function_name,
-                                            response={
-                                                "content": api_response,
-                                            },
-                                        ),
-                                    )
+                        #             response = st.session_state.chat.send_message(
+                        #                 Part.from_function_response(
+                        #                     name=function_name,
+                        #                     response={
+                        #                         "content": api_response,
+                        #                     },
+                        #                 ),
+                        #             )
 
-                                    logging.warning("Function Response complete")
+                        #             logging.warning("Function Response complete")
 
-                                    # backend_details += "- Function call:\n"
-                                    # backend_details += (
-                                    #     "   - Function name: ```"
-                                    #     + str(api_requests_and_responses[-1][0])
-                                    #     + "```"
-                                    # )
-                                    # backend_details += "\n\n"
-                                    # backend_details += (
-                                    #     "   - Function parameters: ```"
-                                    #     + str(api_requests_and_responses[-1][1])
-                                    #     + "```"
-                                    # )
-                                    # backend_details += "\n\n"
-                                    # backend_details += (
-                                    #     "   - API response: ```"
-                                    #     + str(api_requests_and_responses[-1][2])
-                                    #     + "```"
-                                    # )
-                                    # backend_details += "\n\n"
-                                    # with message_placeholder.container():
-                                    #     st.markdown(backend_details)
+                        #             # backend_details += "- Function call:\n"
+                        #             # backend_details += (
+                        #             #     "   - Function name: ```"
+                        #             #     + str(api_requests_and_responses[-1][0])
+                        #             #     + "```"
+                        #             # )
+                        #             # backend_details += "\n\n"
+                        #             # backend_details += (
+                        #             #     "   - Function parameters: ```"
+                        #             #     + str(api_requests_and_responses[-1][1])
+                        #             #     + "```"
+                        #             # )
+                        #             # backend_details += "\n\n"
+                        #             # backend_details += (
+                        #             #     "   - API response: ```"
+                        #             #     + str(api_requests_and_responses[-1][2])
+                        #             #     + "```"
+                        #             # )
+                        #             # backend_details += "\n\n"
+                        #             # with message_placeholder.container():
+                        #             #     st.markdown(backend_details)
 
-                                    backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
+                        #             backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
                                     
-                                    logging.warning("gemini api response completed")
-                                    logging.warning(response)
-                                    logging.warning("next call ready")
-                                    response = response.candidates[0].content.parts[0]
+                        #             logging.warning("gemini api response completed")
+                        #             logging.warning(response)
+                        #             logging.warning("next call ready")
+                        #             response = response.candidates[0].content.parts[0]
 
 
-                                except AttributeError:
-                                    logging.warning(Exception)
-                                    function_calling_in_process = False
+                        #         except AttributeError:
+                        #             logging.warning(Exception)
+                        #             function_calling_in_process = False
 
                         time.sleep(3)
 

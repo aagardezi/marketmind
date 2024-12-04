@@ -336,7 +336,7 @@ if st.session_state['connected']:
         else:
             logging.warning("model name session state initialised")
 
-            st.title(f"""Hello: {st.session_state['user_info'].get('name')}! Company Agent: built using {st.session_state.modelname}""")
+            st.title(f"""Hello: {st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
             vertexai.init(project=PROJECT_ID, location="us-central1")
             model = GenerativeModel(
                 # "gemini-1.5-pro-002",

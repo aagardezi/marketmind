@@ -151,6 +151,7 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
             logging.warning("gemini api response completed")
             logging.warning(response)
             logging.warning("next call ready")
+            logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
             response = response.candidates[0].content.parts[0]
 
 

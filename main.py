@@ -332,64 +332,64 @@ if st.session_state['connected']:
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")
 
-        with st.container():
-            if prompt := st.chat_input("What is up?"):
-                # button_b_pos = "0rem"
-                # button_css = float_css_helper(width="2.2rem", bottom=button_b_pos, transition=0)
-                # float_parent(css=button_css)
-                # # Display user message in chat message container
-                with st.chat_message("user"):
-                    st.markdown(prompt)
+        # with st.container():
+        if prompt := st.chat_input("What is up?"):
+            # button_b_pos = "0rem"
+            # button_css = float_css_helper(width="2.2rem", bottom=button_b_pos, transition=0)
+            # float_parent(css=button_css)
+            # # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+            prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
+                    If the question relates to news use the stock symbol ticker and not the RIC code."""
+
+            # prompt += prompt_enhancement
+            # Add user message to chat history
+
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                full_response = ""
                 
-                prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
-                        If the question relates to news use the stock symbol ticker and not the RIC code."""
+                response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
+                safety_settings=safety_settings)
+                logging.warning("This is the start")
+                logging.warning(response)
+                logging.warning("The start is done")
 
-                # prompt += prompt_enhancement
-                # Add user message to chat history
+                logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
 
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                with st.chat_message("assistant"):
-                    message_placeholder = st.empty()
-                    full_response = ""
-                    
-                    response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
-                    safety_settings=safety_settings)
-                    logging.warning("This is the start")
-                    logging.warning(response)
-                    logging.warning("The start is done")
-
-                    logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-
-                    api_requests_and_responses = []
-                    backend_details = ""
-                    api_response = ""
-                    if len(response.candidates[0].content.parts) >1:
-                        response, backend_details = handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+                api_requests_and_responses = []
+                backend_details = ""
+                api_response = ""
+                if len(response.candidates[0].content.parts) >1:
+                    response, backend_details = handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
 
-                    else:
-                        response, backend_details = handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+                else:
+                    response, backend_details = handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
-                    time.sleep(3)
+                time.sleep(3)
 
-                    full_response = response.text
-                    with message_placeholder.container():
-                        st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                        with st.expander("Function calls, parameters, and responses:"):
-                            st.markdown(backend_details)
+                full_response = response.text
+                with message_placeholder.container():
+                    st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+                    with st.expander("Function calls, parameters, and responses:"):
+                        st.markdown(backend_details)
 
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": full_response,
-                            "backend_details": backend_details,
-                        }
-                    )
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": full_response,
+                        "backend_details": backend_details,
+                    }
+                )
 
 
 
-                    # with message_placeholder.container():
-                    #     message_placeholder.markdown(response.text)
-                    # st.session_state.messages.append({"role": "assistant", "content": response.text})
+                # with message_placeholder.container():
+                #     message_placeholder.markdown(response.text)
+                # st.session_state.messages.append({"role": "assistant", "content": response.text})
 
                 

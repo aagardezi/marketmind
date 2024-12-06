@@ -274,7 +274,7 @@ if not st.session_state['connected']:
 if st.session_state['connected']:
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     with st.sidebar:
-        st.logo("images/marketmind.jpeg")
+        st.logo("images/mmlogo.png")
         st.image(st.session_state['user_info'].get('picture'))
         if st.button('Log out'):
             authenticator.logout()

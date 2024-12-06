@@ -1,6 +1,4 @@
 import time
-import tempfile
-import json
 import streamlit as st
 from streamlit_float import *
 from streamlit_google_auth import Authenticate
@@ -10,12 +8,12 @@ from google.cloud import bigquery
 from google.cloud import secretmanager
 import logging
 
-import helpergetnews
+
 import helperbqfunction
 import geminifunctionsbq
 
 import geminifunctionfinhub
-import geminifunctiongetnews
+
 import helperfinhub
 
 import helpercode
@@ -24,7 +22,6 @@ st.set_page_config(layout="wide")
 # st.set_page_config()
 float_init(theme=True, include_unstable_primary=False)
 
-# c1, c2 = st.columns((1, 3))
 
 @st.dialog("Choose the Model")
 def select_model():
@@ -187,19 +184,6 @@ sql_query_tool = Tool(
     ],
 )
 
-# st.write("Hello world")
-
-# st.text("This is a sample app.")
-
-# def increment_counter():
-#     st.session_state.count += 2
-
-# if 'count' not in st.session_state:
-#     st.session_state.count = 0
-
-# if "celsius" not in st.session_state:
-#     # set the initial default value of the slider widget
-#     st.session_state.celsius = 50.0
 
 generation_config = {
     "max_output_tokens": 8192,

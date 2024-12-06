@@ -19,6 +19,7 @@ import geminifunctionfinhub
 import geminifunctiongetnews
 import helperfinhub
 
+import helpercode
 
 st.set_page_config(layout="wide")
 float_init(theme=True, include_unstable_primary=False)
@@ -36,21 +37,6 @@ def select_model():
     if st.button("Choose Model"):
         st.session_state.modelname = modelname
         st.rerun()
-
-
-def get_project_id():
-  """Gets the current GCP project ID.
-
-  Returns:
-    The project ID as a string.
-  """
-
-  try:
-    _, project_id = google.auth.default()
-    return project_id
-  except google.auth.exceptions.DefaultCredentialsError as e:
-    print(f"Error: Could not determine the project ID. {e}")
-    return None
 
 def handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     logging.warning("Starting parallal function resonse loop")
@@ -176,7 +162,7 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
 
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
-PROJECT_ID = get_project_id()
+PROJECT_ID = helpercode.get_project_id()
 
 sql_query_tool = Tool(
     function_declarations=[
@@ -240,42 +226,6 @@ safety_settings = [
 ]
 
 
-def access_secret_version(project_id, secret_id, version_id="latest"):
-    """
-    Access the payload for the given secret version if one exists. The version
-    can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
-    """
-
-    # Create the Secret Manager client.
-    client = secretmanager.SecretManagerServiceClient()
-
-    # Build the resource name of the secret version.
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-
-    # Access the secret version.
-    response = client.access_secret_version(request={"name": name})
-
-    logging.warning(response.payload.data.decode("UTF-8"))
-    # Return the decoded payload.
-    return response.payload.data.decode("UTF-8")
-
-def create_temp_credentials_file(credentials_json):
-    """
-    Writes a JSON object to a temporary file and returns the file path.
-    """
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix='.json') as temp_file:
-        temp_file.write(credentials_json)
-    temp_file_path = temp_file.name
-    logging.warning(temp_file_path)
-    
-    with open(temp_file_path, 'r', encoding='utf-8') as f:  # Opens the file in read mode with UTF-8 encoding
-        contents = f.read()
-        logging.warning(contents)
-
-    return temp_file_path
-
-
-
 
 def handle_api_response(message_placeholder, api_requests_and_responses, backend_details):
     backend_details += "- Function call:\n"
@@ -302,7 +252,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
     return backend_details
 
 authenticator = Authenticate(
-    secret_credentials_path=create_temp_credentials_file(access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
+    secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
     cookie_name='logincookie',
     cookie_key='this_is_secret',
     redirect_uri='https://marketmind-884152252139.us-central1.run.app/',
@@ -418,173 +368,6 @@ if st.session_state['connected']:
 
                         else:
                             response, backend_details = handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
-
-
-                        # if len(response.candidates[0].content.parts) >1:
-                        #     logging.warning("Starting parallal function resonse loop")
-                        #     parts=[]
-                        #     for response in response.candidates[0].content.parts:
-                        #         logging.warning("Function loop starting")
-                        #         logging.warning(response)
-                        #         params = {}
-                        #         try:
-                        #             for key, value in response.function_call.args.items():
-                        #                 params[key] = value
-                        #         except AttributeError:
-                        #             continue
-                                
-                        #         logging.warning("Prams processing done")
-                        #         logging.warning(response)
-                        #         logging.warning(response.function_call.name)
-                        #         logging.warning(params)
-
-                        #         function_name = response.function_call.name
-
-                        #         if function_name in helperbqfunction.function_handler.keys():
-                        #             api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                        #             api_requests_and_responses.append(
-                        #                     [function_name, params, api_response]
-                        #             )
-
-                        #         if function_name in helperfinhub.function_handler.keys():
-                        #             api_response = helperfinhub.function_handler[function_name](params)
-                        #             api_requests_and_responses.append(
-                        #                     [function_name, params, api_response]
-                        #             )
-
-                        #         logging.warning("Function Response complete")
-
-                        #         logging.warning(api_response)
-
-                        #         parts.append(Part.from_function_response(
-                        #             name=function_name,
-                        #             response={
-                        #                 "content": api_response,
-                        #             },
-                        #             ),
-                        #         )
-
-                        #         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-
-                        #     logging.warning("Making gemin call for api response")
-
-                        #     response = st.session_state.chat.send_message(
-                        #         parts
-                        #     )
-                            
-                        #     logging.warning("gemini api response completed")
-
-
-                        # else:
-                        #     response = response.candidates[0].content.parts[0]
-
-                        #     # api_requests_and_responses = []
-                        #     # backend_details = ""
-                        #     # api_response = ""
-
-
-                        #     logging.warning(response)
-                        #     logging.warning("First Resonse done")
-
-                        #     function_calling_in_process = True
-                        #     while function_calling_in_process:
-                        #         try:
-                        #             logging.warning("Function loop starting")
-                        #             params = {}
-                        #             for key, value in response.function_call.args.items():
-                        #                 params[key] = value
-                                    
-                        #             logging.warning("Prams processing done")
-                        #             logging.warning(response)
-                        #             logging.warning(response.function_call.name)
-                        #             logging.warning(params)
-
-                        #             function_name = response.function_call.name
-
-                        #             # if function_name in helpergetnews.function_handler.keys():
-                        #             #     logging.warning("Getnews function found")
-                        #             #     # Extract the function call name
-                        #             #     # function_name = response.function_call.name
-                        #             #     logging.warning("#### Predicted function name")
-                        #             #     logging.warning(function_name, "\n")
-
-                        #             #     # Extract the function call parameters
-                        #             #     # params = {key: value for key, value in response.function_call.args.items()}
-                        #             #     logging.warning("#### Predicted function parameters")
-                        #             #     logging.warning(params, "\n")
-
-                        #             #     # Invoke a function that calls an external API
-                        #             #     api_response = helpergetnews.function_handler[function_name](params)
-                        #             #     logging.warning("#### API response")
-                        #             #     logging.warning(api_response[:500], "...", "\n")
-
-                        #             #     api_requests_and_responses.append(
-                        #             #             [function_name, params, api_response]
-                        #             #     )
-
-                        #             if function_name in helperbqfunction.function_handler.keys():
-                        #                 logging.warning("BQ function found")
-                        #                 api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                        #                 api_requests_and_responses.append(
-                        #                         [function_name, params, api_response]
-                        #                 )
-
-                        #             if function_name in helperfinhub.function_handler.keys():
-                        #                 logging.warning("finhub function found")
-                        #                 api_response = helperfinhub.function_handler[function_name](params)
-                        #                 api_requests_and_responses.append(
-                        #                         [function_name, params, api_response]
-                        #                 )
-
-                        #             logging.warning("Function Response complete")
-
-                        #             logging.warning(api_response)
-                        #             logging.warning("Making gemin call for api response")
-
-                        #             response = st.session_state.chat.send_message(
-                        #                 Part.from_function_response(
-                        #                     name=function_name,
-                        #                     response={
-                        #                         "content": api_response,
-                        #                     },
-                        #                 ),
-                        #             )
-
-                        #             logging.warning("Function Response complete")
-
-                        #             # backend_details += "- Function call:\n"
-                        #             # backend_details += (
-                        #             #     "   - Function name: ```"
-                        #             #     + str(api_requests_and_responses[-1][0])
-                        #             #     + "```"
-                        #             # )
-                        #             # backend_details += "\n\n"
-                        #             # backend_details += (
-                        #             #     "   - Function parameters: ```"
-                        #             #     + str(api_requests_and_responses[-1][1])
-                        #             #     + "```"
-                        #             # )
-                        #             # backend_details += "\n\n"
-                        #             # backend_details += (
-                        #             #     "   - API response: ```"
-                        #             #     + str(api_requests_and_responses[-1][2])
-                        #             #     + "```"
-                        #             # )
-                        #             # backend_details += "\n\n"
-                        #             # with message_placeholder.container():
-                        #             #     st.markdown(backend_details)
-
-                        #             backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-                                    
-                        #             logging.warning("gemini api response completed")
-                        #             logging.warning(response)
-                        #             logging.warning("next call ready")
-                        #             response = response.candidates[0].content.parts[0]
-
-
-                        #         except AttributeError:
-                        #             logging.warning(Exception)
-                        #             function_calling_in_process = False
 
                         time.sleep(3)
 

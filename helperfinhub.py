@@ -1,7 +1,9 @@
 import finnhub
 import helpercode
 
-finnhub_client = finnhub.Client(api_key="cstluhpr01qj0ou20db0cstluhpr01qj0ou20dbg")
+PROJECT_ID = helpercode.get_project_id()
+
+finnhub_client = finnhub.Client(api_key=helpercode.access_secret_version(PROJECT_ID, "FinHubAccessKey"))
 
 def symbol_lookup(params):
     return finnhub_client.symbol_lookup(params['company_name'])

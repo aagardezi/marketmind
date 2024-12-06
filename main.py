@@ -8,7 +8,6 @@ import vertexai
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google.cloud import bigquery
 from google.cloud import secretmanager
-import google.auth
 import logging
 
 import helpergetnews

@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import tempfile
 import logging
 from google.cloud import secretmanager
+import google.auth
 
 
 

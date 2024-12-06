@@ -274,7 +274,7 @@ if not st.session_state['connected']:
 if st.session_state['connected']:
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     with st.sidebar:
-        st.logo("images/mmlogo.png")
+        st.logo("images/mmlogo1.png")
         st.image(st.session_state['user_info'].get('picture'))
         if st.button('Log out'):
             authenticator.logout()
@@ -286,7 +286,7 @@ if st.session_state['connected']:
         logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:
         logging.warning("model name session state initialised")
-        st.image("images/mmlogo.png")
+        st.image("images/mmlogo1.png")
         st.title(f"""Hello: {st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
         vertexai.init(project=PROJECT_ID, location="us-central1")
         model = GenerativeModel(

@@ -20,8 +20,8 @@ import helperfinhub
 
 import helpercode
 
-# st.set_page_config(layout="wide")
-st.set_page_config()
+st.set_page_config(layout="wide")
+# st.set_page_config()
 float_init(theme=True, include_unstable_primary=False)
 
 # c1, c2 = st.columns((1, 3))

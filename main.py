@@ -173,16 +173,20 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini_chat(parts):
+    logging.warning("Making actual multi gemini call")
     response = st.session_state.chat.send_message(
                 parts
     )
+    logging.warning("Multi call succeeded")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini_chat_single(part):
+    logging.warning("Making actual single gemini call")
     response = st.session_state.chat.send_message(
                 part
     )
+    logging.warning("Single call succeeded")
     return response
 
 

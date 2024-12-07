@@ -8,6 +8,7 @@ from google.cloud import bigquery
 from google.cloud import secretmanager
 import logging
 
+from tenacity import retry, wait_random_exponential
 
 import helperbqfunction
 import geminifunctionsbq
@@ -83,9 +84,12 @@ def handel_gemini_parallel_func(handle_api_response, response, message_placehold
 
     logging.warning("Making gemin call for api response")
 
-    response = st.session_state.chat.send_message(
-                parts
-            )
+    # response = st.session_state.chat.send_message(
+    #             parts
+    #         )
+
+    response = handle_gemini_chat(parts)
+
             
     logging.warning("gemini api response completed")
     return response,backend_details
@@ -131,14 +135,24 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
             logging.warning(api_response)
             logging.warning("Making gemin call for api response")
 
-            response = st.session_state.chat.send_message(
-                        Part.from_function_response(
+            # response = st.session_state.chat.send_message(
+            #             Part.from_function_response(
+            #                 name=function_name,
+            #                 response={
+            #                     "content": api_response,
+            #                 },
+            #             ),
+            # )
+            
+            part = Part.from_function_response(
                             name=function_name,
                             response={
                                 "content": api_response,
                             },
-                        ),
-                    )
+            )
+            response = handle_gemini_chat_single(part)
+
+
 
             logging.warning("Function Response complete")
 
@@ -156,6 +170,20 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
             logging.warning(Exception)
             function_calling_in_process = False
     return response,backend_details
+
+@retry(wait=wait_random_exponential(multiplier=1, max=60))
+def handle_gemini_chat(parts):
+    response = st.session_state.chat.send_message(
+                parts
+    )
+    return response
+
+@retry(wait=wait_random_exponential(multiplier=1, max=60))
+def handle_gemini_chat_single(part):
+    response = st.session_state.chat.send_message(
+                part
+    )
+    return response
 
 
 

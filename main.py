@@ -252,8 +252,8 @@ authenticator = Authenticate(
 if not st.session_state['connected']:
     time.sleep(5)
     authenticator.check_authentification()
-
-# Create the login button
+    st.logo("images/mmlogo1.png")
+    # Create the login button
     authenticator.login()
 
 if st.session_state['connected']:

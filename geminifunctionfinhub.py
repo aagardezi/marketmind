@@ -33,6 +33,11 @@ company_news = FunctionDeclaration(
                 "description": "End date for news data"
             },
         },
+        "required": [
+            "symbol",
+            "from_date",
+            "to_date",
+        ]
     },
 )
 
@@ -97,6 +102,11 @@ insider_sentiment = FunctionDeclaration(
                 "description": "End date for insider sentiment data"
             },
         },
+        "required": [
+            "symbol",
+            "from_date",
+            "to_date",
+        ]
     },
 )
 
@@ -119,6 +129,11 @@ financials_reported = FunctionDeclaration(
                 "description": "End date for insider sentiment data"
             },
         },
+        "required": [
+            "symbol",
+            "from_date",
+            "to_date",
+        ]
     },
 )
 
@@ -141,5 +156,10 @@ sec_filings = FunctionDeclaration(
                 "description": "End date for insider sentiment data"
             },
         },
+        "required": [
+            "symbol",
+            "from_date",
+            "to_date",
+        ]
     },
 )

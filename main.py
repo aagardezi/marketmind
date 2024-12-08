@@ -360,7 +360,8 @@ if st.session_state['connected']:
                 st.markdown(prompt)
             
             prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
-                    If the question relates to news use the stock symbol ticker and not the RIC code."""
+                    If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
+                                requires a data and its not present the use the current year"""
 
             # prompt += prompt_enhancement
             # Add user message to chat history

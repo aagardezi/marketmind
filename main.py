@@ -1,4 +1,5 @@
 import time
+import os
 import streamlit as st
 from streamlit_float import *
 from streamlit_google_auth import Authenticate
@@ -268,6 +269,10 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
         st.markdown(backend_details)
     return backend_details
 
+
+USE_AUTHENTICATION = os.getenv('USEAUTH', True)
+
+
 authenticator = Authenticate(
     secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
     cookie_name='logincookie',
@@ -281,20 +286,21 @@ authenticator = Authenticate(
 #     st.link_button('Login', authorization_url)
 
 
-if not st.session_state['connected']:
+if (not st.session_state['connected']) and USE_AUTHENTICATION:
     time.sleep(5)
     authenticator.check_authentification()
     st.logo("images/mmlogo1.png")
     # Create the login button
     authenticator.login()
 
-if st.session_state['connected']:
+if st.session_state['connected'] or not USE_AUTHENTICATION:
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     with st.sidebar:
         st.logo("images/mmlogo1.png")
-        st.image(st.session_state['user_info'].get('picture'))
-        if st.button('Log out'):
-            authenticator.logout()
+        if USE_AUTHENTICATION:
+            st.image(st.session_state['user_info'].get('picture'))
+            if st.button('Log out'):
+                authenticator.logout()
 
     if "modelname" not in st.session_state:
         logging.warning("model name session state not initialised")
@@ -304,7 +310,10 @@ if st.session_state['connected']:
     else:
         logging.warning("model name session state initialised")
         st.image("images/mmlogo1.png")
-        st.title(f"""Hello: {st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
+        if USE_AUTHENTICATION:
+            st.title(f"""Hello: {st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
+        else:
+            st.title(f"""Hello! MarketMind: built using {st.session_state.modelname}""")
         vertexai.init(project=PROJECT_ID, location="us-central1")
         model = GenerativeModel(
             # "gemini-1.5-pro-002",

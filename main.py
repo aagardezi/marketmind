@@ -272,6 +272,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
 
 USE_AUTHENTICATION = os.getenv('USEAUTH', True)
 
+logging.warning(f"""Auth is set to {USE_AUTHENTICATION}""")
 
 authenticator = Authenticate(
     secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),

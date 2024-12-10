@@ -169,8 +169,8 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
             response = response.candidates[0].content.parts[0]
 
 
-        except AttributeError:
-            logging.warning(Exception)
+        except AttributeError as e:
+            logging.warning(e)
             function_calling_in_process = False
     return response,backend_details
 

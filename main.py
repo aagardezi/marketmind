@@ -270,7 +270,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
     return backend_details
 
 
-USE_AUTHENTICATION = bool(os.getenv('USEAUTH', True))
+USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
 
 logging.warning(f"""Auth as bool is set to {USE_AUTHENTICATION}""")
 logging.warning(f"""Auth as string is set to {os.getenv('USEAUTH')}""")

@@ -34,6 +34,7 @@ def select_model():
         placeholder="Select a Model",
     )
     if st.button("Choose Model"):
+        logging.warning("Button pressed")
         st.session_state.modelname = modelname
         st.rerun()
 

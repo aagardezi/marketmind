@@ -318,7 +318,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         logging.warning("model name session state not initialised")
         # st.session_state.modelname = "gemini-1.5-pro-002"
         select_model()
-        logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
+        # logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:
         logging.warning("model name session state initialised")
         st.image("images/mmlogo1.png")

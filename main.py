@@ -286,6 +286,7 @@ authenticator = Authenticate(
 #     st.markdown(f'[Login]({authorization_url})')
 #     st.link_button('Login', authorization_url)
 
+logging.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 
 if (not st.session_state['connected']) and USE_AUTHENTICATION:
     time.sleep(5)

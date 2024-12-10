@@ -27,6 +27,7 @@ float_init(theme=True, include_unstable_primary=False)
 
 @st.dialog("Choose the Model")
 def select_model():
+    logging.warning("Selecting Model")
     modelname = st.selectbox(
         "Select the Gemini version you would like to use",
         ("gemini-1.5-pro-002", "gemini-1.5-flash-002"),
@@ -311,11 +312,11 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.image(st.session_state['user_info'].get('picture'))
             if st.button('Log out'):
                 authenticator.logout()
-        st.text("Hello")
+        st.text("MarketMind")
 
     if "modelname" not in st.session_state:
         logging.warning("model name session state not initialised")
-        st.session_state.modelname = "gemini-1.5-pro-002"
+        # st.session_state.modelname = "gemini-1.5-pro-002"
         select_model()
         logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:

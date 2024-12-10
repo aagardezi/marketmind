@@ -289,7 +289,7 @@ authenticator = Authenticate(
 logging.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 logging.warning(f"""final auth status is {(not st.session_state['connected']) and ( USE_AUTHENTICATION)}""")
 
-if (not st.session_state['connected']) and ( USE_AUTHENTICATION):
+if ((not st.session_state['connected']) and ( USE_AUTHENTICATION)):
     logging.warning("Auth Starting")
     time.sleep(5)
     authenticator.check_authentification()

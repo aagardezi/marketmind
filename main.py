@@ -166,7 +166,14 @@ def handle_gemini_serial_func(handle_api_response, response, message_placeholder
             logging.warning(response)
             logging.warning("next call ready")
             logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-            response = response.candidates[0].content.parts[0]
+            if len(response.candidates[0].content.parts) >1:
+                response, backend_details = handel_gemini_parallel_func(handle_api_response,
+                                                                        response,
+                                                                        message_placeholder,
+                                                                        api_requests_and_responses,
+                                                                        backend_details)
+            else:
+                response = response.candidates[0].content.parts[0]
 
 
         except AttributeError as e:

@@ -310,6 +310,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.image(st.session_state['user_info'].get('picture'))
             if st.button('Log out'):
                 authenticator.logout()
+        st.text("Hello")
 
     if "modelname" not in st.session_state:
         logging.warning("model name session state not initialised")

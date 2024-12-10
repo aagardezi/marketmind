@@ -270,7 +270,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
     return backend_details
 
 
-USE_AUTHENTICATION = os.getenv('USEAUTH', True)
+USE_AUTHENTICATION = bool(os.getenv('USEAUTH', True))
 
 logging.warning(f"""Auth is set to {USE_AUTHENTICATION}""")
 
@@ -289,7 +289,7 @@ authenticator = Authenticate(
 logging.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 
 
-authstatus = bool((not st.session_state['connected']) and ( USE_AUTHENTICATION))
+authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))
 
 logging.warning(f"""final auth status is {authstatus}""")
 

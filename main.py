@@ -298,8 +298,8 @@ authenticator = Authenticate(
 
 logging.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 
-clientip = helperstreamlit.get_remote_ip()
-logging.warning(f"""Client IP is {clientip}""")
+clientinfo = helperstreamlit.get_remote_ip()
+logging.warning(f"""Client info is {clientinfo}""")
 
 
 authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))

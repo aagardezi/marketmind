@@ -15,4 +15,4 @@ def get_remote_ip() -> str:
     except Exception as e:
         return None
 
-    return session_info.request.remote_ip
+    return session_info.request

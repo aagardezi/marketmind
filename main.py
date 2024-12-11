@@ -13,12 +13,12 @@ from tenacity import retry, wait_random_exponential
 
 import helperbqfunction
 import geminifunctionsbq
-
 import geminifunctionfinhub
 
 import helperfinhub
-
 import helpercode
+import helperstreamlit
+
 
 st.set_page_config(layout="wide")
 # st.set_page_config()
@@ -297,6 +297,9 @@ authenticator = Authenticate(
 #     st.link_button('Login', authorization_url)
 
 logging.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
+
+clientip = helperstreamlit.get_remote_ip()
+logging.warning(f"""Client IP is {clientip}""")
 
 
 authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))

@@ -41,7 +41,7 @@ def select_model():
         st.session_state.modelname = modelname
         st.rerun()
 
-def handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
+def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     logging.warning("Starting parallal function resonse loop")
     parts=[]
     for response in response.candidates[0].content.parts:
@@ -100,7 +100,7 @@ def handel_gemini_parallel_func(handle_api_response, response, message_placehold
     return response,backend_details
 
 
-def handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
+def handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     response = response.candidates[0].content.parts[0]
 
     logging.warning(response)
@@ -229,18 +229,23 @@ sql_query_tool = Tool(
     ],
 )
 
+TEMP_INSTRUCTION = f"""lseg tick history data and uses RIC and ticker symbols to analyse stocks
+                        When writing SQL query ensure you use the Date_Time field in the where clause.
+                        {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
+                        RIC is the column to search for a stock
+                        When accessing news use the symbol for the company instead of the RIC cod."""
+
 SYSTEM_INSTRUCTION = f"""You are a financial analyst that understands financial data. Do the analysis like and asset management 
                             investor and create a detaild report
-                            lseg tick history data and uses RIC and ticker symbols to analyse stocks
-                            When writing SQL query ensure you use the Date_Time field in the where clause.
-                                {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
-                            RIC is the column to search for a stock
-                            When accessing news use the symbol for the company instead of the RIC cod.
                             You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup 
                             before any subsequent functions.
                             When doing an analysis of the company, include the company profile, company news, 
                             company basic financials and an analysis of the peers
                             Also get the insider sentiment and add a section on that. Include a section on SEC filings. If a tool 
+                            requires a data and its not present the use the current year"""
+
+PROMPT_ENHANCEMENT = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
+                If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
                             requires a data and its not present the use the current year"""
 
 generation_config = {
@@ -342,10 +347,6 @@ def handle_gemini20():
         # # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
-        
-        prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
-                If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
-                            requires a data and its not present the use the current year"""
 
         # prompt += prompt_enhancement
         # Add user message to chat history
@@ -357,7 +358,7 @@ def handle_gemini20():
             
             # response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
             # safety_settings=safety_settings)
-            st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+prompt_enhancement )]))
+            st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
             response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,
                                                               config=generate_config_20)
@@ -450,10 +451,6 @@ def handle_gemini15():
         # # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
-        
-        prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
-                If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
-                            requires a data and its not present the use the current year"""
 
         # prompt += prompt_enhancement
         # Add user message to chat history
@@ -463,7 +460,7 @@ def handle_gemini15():
             message_placeholder = st.empty()
             full_response = ""
             
-            response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
+            response = st.session_state.chat.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
             safety_settings=safety_settings)
             logging.warning("This is the start")
             logging.warning(response)
@@ -475,11 +472,11 @@ def handle_gemini15():
             backend_details = ""
             api_response = ""
             if len(response.candidates[0].content.parts) >1:
-                response, backend_details = handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+                response, backend_details = handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
 
             else:
-                response, backend_details = handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+                response, backend_details = handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
             time.sleep(3)
 

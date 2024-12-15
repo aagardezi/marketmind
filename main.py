@@ -5,8 +5,10 @@ from streamlit_float import *
 from streamlit_google_auth import Authenticate
 import vertexai
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
+from google import genai
+from google.genai import types
 from google.cloud import bigquery
-from google.cloud import secretmanager
+
 import logging
 
 from tenacity import retry, wait_random_exponential
@@ -30,7 +32,7 @@ def select_model():
     logging.warning("Selecting Model")
     modelname = st.selectbox(
         "Select the Gemini version you would like to use",
-        ("gemini-1.5-pro-002", "gemini-1.5-flash-002"),
+        ("gemini-1.5-pro-002", "gemini-1.5-flash-002", "gemini-2.0-flash-exp"),
         index=0,
         placeholder="Select a Model",
     )
@@ -203,6 +205,7 @@ def handle_gemini_chat_single(part):
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = helpercode.get_project_id()
+LOCATION = "us-central1"
 
 sql_query_tool = Tool(
     function_declarations=[
@@ -226,12 +229,46 @@ sql_query_tool = Tool(
     ],
 )
 
+SYSTEM_INSTRUCTION = f"""You are a financial analyst that understands financial data. Do the analysis like and asset management 
+                            investor and create a detaild report
+                            lseg tick history data and uses RIC and ticker symbols to analyse stocks
+                            When writing SQL query ensure you use the Date_Time field in the where clause.
+                                {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
+                            RIC is the column to search for a stock
+                            When accessing news use the symbol for the company instead of the RIC cod.
+                            You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup 
+                            before any subsequent functions.
+                            When doing an analysis of the company, include the company profile, company news, 
+                            company basic financials and an analysis of the peers
+                            Also get the insider sentiment and add a section on that. Include a section on SEC filings. If a tool 
+                            requires a data and its not present the use the current year"""
 
 generation_config = {
     "max_output_tokens": 8192,
     "temperature": 1,
     "top_p": 0.95,
 }
+
+generate_config_20 = types.GenerateContentConfig(
+    temperature = 1,
+    top_p = 0.95,
+    max_output_tokens = 8192,
+    response_modalities = ["TEXT"],
+    safety_settings = [types.SafetySetting(
+      category="HARM_CATEGORY_HATE_SPEECH",
+      threshold="OFF"
+    ),types.SafetySetting(
+      category="HARM_CATEGORY_DANGEROUS_CONTENT",
+      threshold="OFF"
+    ),types.SafetySetting(
+      category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+      threshold="OFF"
+    ),types.SafetySetting(
+      category="HARM_CATEGORY_HARASSMENT",
+      threshold="OFF"
+    )],
+    system_instruction=[types.Part.from_text(SYSTEM_INSTRUCTION)],
+)
 
 safety_settings = [
     SafetySetting(
@@ -278,26 +315,101 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
         st.markdown(backend_details)
     return backend_details
 
+def handle_gemini20():
+    client = genai.Client(
+        vertexai=True,
+        project=PROJECT_ID,
+        location=LOCATION
+    )
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    if "chat" not in st.session_state:
+        st.session_state.chat = client
+    
+    if "aicontent" not in st.session_state:
+        st.session_state.aicontent = []
+    
+    if prompt := st.chat_input("What is up?"):
+        # button_b_pos = "0rem"
+        # button_css = float_css_helper(width="2.2rem", bottom=button_b_pos, transition=0)
+        # float_parent(css=button_css)
+        # # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        
+        prompt_enhancement = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
+                If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
+                            requires a data and its not present the use the current year"""
+
+        # prompt += prompt_enhancement
+        # Add user message to chat history
+
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            full_response = ""
+            
+            # response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
+            # safety_settings=safety_settings)
+            st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+prompt_enhancement )]))
+            response = st.session_state.chat.generate_content(model=st.session_state.modelname,
+                                                              contents=st.session_state.aicontent,
+                                                              config=generate_config_20)
+
+            logging.warning("This is the start")
+            logging.warning(response)
+            logging.warning("The start is done")
+
+            logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+
+            api_requests_and_responses = []
+            backend_details = ""
+            api_response = ""
+            if len(response.candidates[0].content.parts) >1:
+                response, backend_details = handel_gemini_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+
+
+            else:
+                response, backend_details = handle_gemini_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+
+            time.sleep(3)
+
+            full_response = response.text
+            with message_placeholder.container():
+                st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+                with st.expander("Function calls, parameters, and responses:"):
+                    st.markdown(backend_details)
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": full_response,
+                    "backend_details": backend_details,
+                }
+            )
+
+
+
+            # with message_placeholder.container():
+            #     message_placeholder.markdown(response.text)
+            # st.session_state.messages.append({"role": "assistant", "content": response.text})
+
+
+
 
 
 def handle_gemini15():
-    vertexai.init(project=PROJECT_ID, location="us-central1")
+    vertexai.init(project=PROJECT_ID, location=LOCATION)
     model = GenerativeModel(
         # "gemini-1.5-pro-002",
         st.session_state.modelname,
-        system_instruction=[f"""You are a financial analyst that understands financial data. Do the analysis like and asset management 
-                            investor and create a detaild report
-                            lseg tick history data and uses RIC and ticker symbols to analyse stocks
-                            When writing SQL query ensure you use the Date_Time field in the where clause.
-                                {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
-                            RIC is the column to search for a stock
-                            When accessing news use the symbol for the company instead of the RIC cod.
-                            You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup 
-                            before any subsequent functions.
-                            When doing an analysis of the company, include the company profile, company news, 
-                            company basic financials and an analysis of the peers
-                            Also get the insider sentiment and add a section on that. Include a section on SEC filings. If a tool 
-                            requires a data and its not present the use the current year"""],
+        system_instruction=[SYSTEM_INSTRUCTION],
         tools=[sql_query_tool],
     )
 
@@ -452,6 +564,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.title(f"""MarketMind: built using {st.session_state.modelname}""")
         if st.session_state.modelname.startswith("gemini-1.5"):
             handle_gemini15()
+        else:
+            handle_gemini20()
         # vertexai.init(project=PROJECT_ID, location="us-central1")
         # model = GenerativeModel(
         #     # "gemini-1.5-pro-002",

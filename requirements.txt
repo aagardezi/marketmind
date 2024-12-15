@@ -13,3 +13,4 @@ streamlit-google-auth
 BeautifulSoup4
 google-cloud-secret-manager
 streamlit_float
+google-genai

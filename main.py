@@ -450,7 +450,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.title(f"""{st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
         else:
             st.title(f"""MarketMind: built using {st.session_state.modelname}""")
-        handle_gemini15()
+        if st.session_state.modelname.startswith("gemini-1.5"):
+            handle_gemini15()
         # vertexai.init(project=PROJECT_ID, location="us-central1")
         # model = GenerativeModel(
         #     # "gemini-1.5-pro-002",

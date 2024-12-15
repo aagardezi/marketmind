@@ -358,7 +358,7 @@ def handle_gemini20():
             # response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
             # safety_settings=safety_settings)
             st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+prompt_enhancement )]))
-            response = st.session_state.chat.generate_content(model=st.session_state.modelname,
+            response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,
                                                               config=generate_config_20)
 

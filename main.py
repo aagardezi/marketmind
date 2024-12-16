@@ -566,12 +566,14 @@ def handle_gemini20():
             
             # response = st.session_state.chat.send_message(prompt + prompt_enhancement,generation_config=generation_config,
             # safety_settings=safety_settings)
+            logging.warning("Configuring prompt")
             st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
+            logging.warning("Prompt configured, calling Gemini...")
             response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,
                                                               config=generate_config_20)
 
-            logging.warning("This is the start")
+            logging.warning("Gemini called, This is the start")
             logging.warning(response)
             logging.warning("The start is done")
 

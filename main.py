@@ -27,6 +27,7 @@ st.set_page_config(layout="wide")
 # st.set_page_config()
 float_init(theme=True, include_unstable_primary=False)
 
+stringoutputcount = 0
 
 @st.dialog("Choose the Model")
 def select_model():
@@ -218,7 +219,8 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
                     )
 
         logging.warning("Function Response complete")
-
+        stringoutputcount = stringoutputcount + len(api_response)
+        logging.warning(f"""String output count is {stringoutputcount}""")
         logging.warning(api_response)
         function_parts.append(response)
         parts.append(types.Part.from_function_response(
@@ -287,7 +289,8 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
                         )
 
             logging.warning("Function Response complete")
-
+            stringoutputcount = stringoutputcount + len(api_response)
+            logging.warning(f"""String output count is {stringoutputcount}""")
             logging.warning(api_response)
             logging.warning("Making gemin call for api response")
 
@@ -547,6 +550,8 @@ def handle_gemini20():
     if "aicontent" not in st.session_state:
         st.session_state.aicontent = []
     
+    stringoutputcount = 0
+
     if prompt := st.chat_input("What is up?"):
         # button_b_pos = "0rem"
         # button_css = float_css_helper(width="2.2rem", bottom=button_b_pos, transition=0)
@@ -590,7 +595,7 @@ def handle_gemini20():
                 response, backend_details = handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
             time.sleep(3)
-
+            
             full_response = response.text
             st.session_state.aicontent.append(types.Content(role='model', parts=[types.Part(text=full_response)]))
             with message_placeholder.container():
@@ -605,6 +610,7 @@ def handle_gemini20():
                     "backend_details": backend_details,
                 }
             )
+            logging.warning(f"""Total string output count is {stringoutputcount}""")
             logging.warning("This is the end of Gemini 2.0")
 
 

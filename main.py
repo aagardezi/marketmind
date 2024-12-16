@@ -239,6 +239,14 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
     response = handle_gemini20_chat(parts, function_parts)
 
+    logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+    if len(response.candidates[0].content.parts) >1:
+        response, backend_details = handel_gemini20_parallel_func(handle_api_response,
+                                                                response,
+                                                                        message_placeholder,
+                                                                        api_requests_and_responses,
+                                                                        backend_details)
+
             
     logging.warning("gemini api response completed")
     return response,backend_details

@@ -347,9 +347,13 @@ def handle_gemini15_chat_single(part):
 def handle_gemini20_chat(parts):
     logging.warning("Making actual multi gemini call")
     st.session_state.aicontent.append(parts)
-    response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
+    try:
+        response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,
                                                               config=generate_config_20)
+    except Exception as e:
+        logging.error(e)
+        raise e
     logging.warning("Multi call succeeded")
     return response
 
@@ -358,9 +362,13 @@ def handle_gemini20_chat_single(part, response):
     logging.warning("Making actual single gemini call")
     st.session_state.aicontent.append(response)
     st.session_state.aicontent.append(part)
-    response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
+    try:
+        response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,
                                                               config=generate_config_20)
+    except Exception as e:
+        logging.error(e)
+        raise e
     logging.warning("Single call succeeded")
     return response
 

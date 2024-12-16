@@ -558,7 +558,7 @@ def handle_gemini20():
             api_requests_and_responses = []
             backend_details = ""
             api_response = ""
-            if len(response.candidates[0].content.parts) >1:
+            if len(response.candidates[0].content.parts) >2:
                 response, backend_details = handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
 

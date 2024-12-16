@@ -16,6 +16,7 @@ from tenacity import retry, wait_random_exponential
 import helperbqfunction
 import geminifunctionsbq
 import geminifunctionfinhub
+import gemini20functionfinhub
 
 import helperfinhub
 import helpercode
@@ -393,23 +394,23 @@ sql_query_tool = Tool(
 
 sql_query20_tool = types.Tool(
     function_declarations=[
-        geminifunctionsbq.sql_query_func,
-        geminifunctionsbq.list_datasets_func,
-        geminifunctionsbq.list_tables_func,
-        geminifunctionsbq.get_table_func,
-        geminifunctionsbq.sql_query_func,
+        # geminifunctionsbq.sql_query_func,
+        # geminifunctionsbq.list_datasets_func,
+        # geminifunctionsbq.list_tables_func,
+        # geminifunctionsbq.get_table_func,
+        # geminifunctionsbq.sql_query_func,
         # geminifunctiongetnews.get_company_overview,
         # # get_stock_price,
         # geminifunctiongetnews.get_company_news,
         # geminifunctiongetnews.get_news_with_sentiment,
-        geminifunctionfinhub.symbol_lookup,
-        geminifunctionfinhub.company_news,
-        geminifunctionfinhub.company_profile,
-        geminifunctionfinhub.company_basic_financials,
-        geminifunctionfinhub.company_peers,
-        geminifunctionfinhub.insider_sentiment,
-        geminifunctionfinhub.financials_reported,
-        geminifunctionfinhub.sec_filings,
+        gemini20functionfinhub.symbol_lookup,
+        gemini20functionfinhub.company_news,
+        gemini20functionfinhub.company_profile,
+        gemini20functionfinhub.company_basic_financials,
+        gemini20functionfinhub.company_peers,
+        gemini20functionfinhub.insider_sentiment,
+        gemini20functionfinhub.financials_reported,
+        gemini20functionfinhub.sec_filings,
     ],
 )
 
@@ -457,7 +458,7 @@ generate_config_20 = types.GenerateContentConfig(
       threshold="OFF"
     )],
     system_instruction=[types.Part.from_text(SYSTEM_INSTRUCTION)],
-    tools= sql_query20_tool,
+    tools= [sql_query20_tool],
 )
 
 safety_settings = [

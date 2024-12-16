@@ -187,6 +187,7 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
 
 def handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     logging.warning("Starting parallal function resonse loop")
+    global stringoutputcount
     parts=[]
     function_parts = []
     for response in response.candidates[0].content.parts:
@@ -255,7 +256,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
 def handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     response = response.candidates[0].content.parts[0]
-
+    global stringoutputcount
     logging.warning(response)
     logging.warning("First Resonse done")
 

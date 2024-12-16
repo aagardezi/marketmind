@@ -575,12 +575,15 @@ def handle_gemini20():
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             full_response = ""
-            
+
 
             logging.warning("Configuring prompt")
             st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
             functioncontent = []
             functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
+            logging.warning("Conversation history start")
+            logging.warning(st.session_state.aicontent)
+            logging.warning("Conversation history end")
             logging.warning("Prompt configured, calling Gemini...")
             response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,

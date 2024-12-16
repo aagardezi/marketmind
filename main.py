@@ -457,7 +457,7 @@ generate_config_20 = types.GenerateContentConfig(
       threshold="OFF"
     )],
     system_instruction=[types.Part.from_text(SYSTEM_INSTRUCTION)],
-    # tools= [sql_query20_tool],
+    tools= sql_query20_tool,
 )
 
 safety_settings = [

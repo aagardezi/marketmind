@@ -357,6 +357,8 @@ def handle_gemini20_chat(parts, function_parts):
         logging.error(e)
         raise e
     logging.warning("Multi call succeeded")
+    logging.warning(response)
+    logging.warning("sending response back")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -568,7 +570,7 @@ def handle_gemini20():
             api_requests_and_responses = []
             backend_details = ""
             api_response = ""
-            if len(response.candidates[0].content.parts) >2:
+            if len(response.candidates[0].content.parts) >1:
                 response, backend_details = handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
 
 

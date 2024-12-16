@@ -187,6 +187,7 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
 def handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     logging.warning("Starting parallal function resonse loop")
     parts=[]
+    function_parts = []
     for response in response.candidates[0].content.parts:
         logging.warning("Function loop starting")
         logging.warning(response)
@@ -219,7 +220,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
         logging.warning("Function Response complete")
 
         logging.warning(api_response)
-        parts.append(response)
+        function_parts.append(response)
         parts.append(types.Part.from_function_response(
                     name=function_name,
                     response={
@@ -236,7 +237,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
     #             parts
     #         )
 
-    response = handle_gemini20_chat(parts)
+    response = handle_gemini20_chat(parts, function_parts)
 
             
     logging.warning("gemini api response completed")
@@ -344,8 +345,9 @@ def handle_gemini15_chat_single(part):
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
-def handle_gemini20_chat(parts):
+def handle_gemini20_chat(parts, function_parts):
     logging.warning("Making actual multi gemini call")
+    st.session_state.aicontent.append(function_parts)
     st.session_state.aicontent.append(parts)
     try:
         response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,

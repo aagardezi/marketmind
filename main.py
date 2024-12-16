@@ -220,7 +220,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
                     )
 
         logging.warning("Function Response complete")
-        stringoutputcount = stringoutputcount + len(api_response)
+        stringoutputcount = stringoutputcount + len(str(api_response))
         logging.warning(f"""String output count is {stringoutputcount}""")
         logging.warning(api_response)
         function_parts.append(response)
@@ -290,7 +290,7 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
                         )
 
             logging.warning("Function Response complete")
-            stringoutputcount = stringoutputcount + len(api_response)
+            stringoutputcount = stringoutputcount + len(str(api_response))
             logging.warning(f"""String output count is {stringoutputcount}""")
             logging.warning(api_response)
             logging.warning("Making gemin call for api response")
@@ -532,6 +532,8 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
 
 def handle_gemini20():
     logging.warning("Starting Gemini 2.0")
+    global stringoutputcount
+
     client = genai.Client(
         vertexai=True,
         project=PROJECT_ID,

@@ -527,6 +527,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
     return backend_details
 
 def handle_gemini20():
+    logging.warning("Starting Gemini 2.0")
     client = genai.Client(
         vertexai=True,
         project=PROJECT_ID,
@@ -556,6 +557,7 @@ def handle_gemini20():
 
         # prompt += prompt_enhancement
         # Add user message to chat history
+        logging.warning(f"""Prompt is: {prompt}""")
 
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
@@ -601,6 +603,8 @@ def handle_gemini20():
                     "backend_details": backend_details,
                 }
             )
+            logging.warning("This is the end of Gemini 2.0")
+
 
 
 
@@ -613,6 +617,7 @@ def handle_gemini20():
 
 
 def handle_gemini15():
+    logging.warning("Starting Gemini 1.5")
     vertexai.init(project=PROJECT_ID, location=LOCATION)
     model = GenerativeModel(
         # "gemini-1.5-pro-002",
@@ -760,7 +765,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         select_model()
         # logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:
-        logging.warning("model name session state initialised")
+        logging.warning(f"""model name session state initialised and it is: {st.session_state.modelname}""")
         st.image("images/mmlogo1.png")
         if USE_AUTHENTICATION:
             st.title(f"""{st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")

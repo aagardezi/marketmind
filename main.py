@@ -459,9 +459,9 @@ SYSTEM_INSTRUCTION = f"""You are a financial analyst that understands financial 
                             Also get the insider sentiment and add a section on that. Include a section on SEC filings. If a tool 
                             requires a data and its not present the use the current year"""
 
-PROMPT_ENHANCEMENT = """ If the question requires SQL data then Make sure you get the data from the sql query first and then analyse it in its completeness if not get the news directly
-                If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
-                            requires a data and its not present the use the current year"""
+PROMPT_ENHANCEMENT = """ If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
+                            requires a data and its not present the use the current year. Always evalulate if the Function Call is
+                            required to answer and perform function calling using the tools provided."""
 
 generation_config = {
     "max_output_tokens": 8192,

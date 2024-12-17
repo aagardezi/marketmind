@@ -27,11 +27,16 @@ st.set_page_config(layout="wide")
 # st.set_page_config()
 float_init(theme=True, include_unstable_primary=False)
 
+#logging initialised
+helpercode.init_logger()
+logger = logging.getLogger("foobar")
+
+
 stringoutputcount = 0
 
 @st.dialog("Choose the Model")
 def select_model():
-    logging.warning("Selecting Model")
+    logger.warning("Selecting Model")
     modelname = st.selectbox(
         "Select the Gemini version you would like to use",
         ("gemini-1.5-pro-002", "gemini-1.5-flash-002", "gemini-2.0-flash-exp"),
@@ -39,7 +44,7 @@ def select_model():
         placeholder="Select a Model",
     )
     if st.button("Choose Model"):
-        logging.warning("Button pressed")
+        logging.warning(f"""Button pressed, model selected: {modelname}""")
         st.session_state.modelname = modelname
         st.rerun()
 
@@ -577,7 +582,8 @@ def handle_gemini20():
 
 
         # Add user message to chat history
-        logging.warning(f"""Prompt is: {prompt}""")
+        logging.warning(f"""Model is: {st.session_state.modelname}, Prompt is: {prompt}""")
+  
 
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):

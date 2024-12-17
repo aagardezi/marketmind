@@ -73,15 +73,51 @@ def create_temp_credentials_file(credentials_json):
 
 
 def get_project_id():
-  """Gets the current GCP project ID.
+    """Gets the current GCP project ID.
 
-  Returns:
-    The project ID as a string.
-  """
+    Returns:
+        The project ID as a string.
+    """
 
-  try:
-    _, project_id = google.auth.default()
-    return project_id
-  except google.auth.exceptions.DefaultCredentialsError as e:
-    print(f"Error: Could not determine the project ID. {e}")
-    return None
+    try:
+        _, project_id = google.auth.default()
+        return project_id
+    except google.auth.exceptions.DefaultCredentialsError as e:
+        print(f"Error: Could not determine the project ID. {e}")
+        return None
+  
+def _get_session():
+    from streamlit.runtime import get_instance
+    from streamlit.runtime.scriptrunner import get_script_run_ctx
+    runtime = get_instance()
+    session_id = get_script_run_ctx().session_id
+    session_info = runtime._session_mgr.get_session_info(session_id)
+    if session_info is None:
+        raise RuntimeError("Couldn't get your Streamlit Session object.")
+    return session_info.session
+
+
+class ContextFilter(logging.Filter):
+    def filter(self, record):
+        record.user_ip = _get_session()
+        return super().filter(record)
+
+def init_logging():
+    # Make sure to instanciate the logger only once
+    # otherwise, it will create a StreamHandler at every run
+    # and duplicate the messages
+
+    # create a custom logger
+    logger = logging.getLogger("foobar")
+    if logger.handlers:  # logger is already setup, don't setup again
+        return
+    logger.propagate = False
+    logger.setLevel(logging.INFO)
+    # in the formatter, use the variable "user_ip"
+    formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s [user_ip=%(user_ip)s] - %(message)s")
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    handler.addFilter(ContextFilter())
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+

@@ -243,6 +243,10 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
     response, functioncontent = handle_gemini20_chat(parts, function_parts, functioncontent)
 
     logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+    #testing
+    st.session_state.aicontent.append(response.candidates[0].content)
+    #testing
+
     if len(response.candidates[0].content.parts) >1:
         response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response,
                                                                 response,
@@ -323,6 +327,10 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
             logging.warning(response)
             logging.warning("next call ready")
             logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+            #testing
+            st.session_state.aicontent.append(response.candidates[0].content)
+            #testing
+
             if len(response.candidates[0].content.parts) >1:
                 response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response,
                                                                         response,
@@ -597,7 +605,9 @@ def handle_gemini20():
 
             api_requests_and_responses = []
             backend_details = ""
-
+            #testing
+            st.session_state.aicontent.append(response.candidates[0].content)
+            #testing
             if len(response.candidates[0].content.parts) >1:
                 response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
 
@@ -608,7 +618,7 @@ def handle_gemini20():
             time.sleep(3)
             
             full_response = response.text
-            st.session_state.aicontent.append(types.Content(role='model', parts=[types.Part(text=full_response)]))
+            # st.session_state.aicontent.append(types.Content(role='model', parts=[types.Part(text=full_response)]))
             with message_placeholder.container():
                 st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
                 with st.expander("Function calls, parameters, and responses:"):

@@ -114,7 +114,7 @@ def init_logging():
     logger.propagate = False
     logger.setLevel(logging.INFO)
     # in the formatter, use the variable "user_ip"
-    formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s [user_ip=%(user_ip)s] - %(message)s")
+    formatter = logging.Formatter("%(name)s %(levelname)s [session=%(user_ip)s] - %(message)s")
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
     handler.addFilter(ContextFilter())

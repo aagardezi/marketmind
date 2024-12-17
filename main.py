@@ -44,16 +44,16 @@ def select_model():
         placeholder="Select a Model",
     )
     if st.button("Choose Model"):
-        logging.warning(f"""Button pressed, model selected: {modelname}""")
+        logger.warning(f"""Button pressed, model selected: {modelname}""")
         st.session_state.modelname = modelname
         st.rerun()
 
 def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
-    logging.warning("Starting parallal function resonse loop")
+    logger.warning("Starting parallal function resonse loop")
     parts=[]
     for response in response.candidates[0].content.parts:
-        logging.warning("Function loop starting")
-        logging.warning(response)
+        logger.warning("Function loop starting")
+        logger.warning(response)
         params = {}
         try:
             for key, value in response.function_call.args.items():
@@ -61,10 +61,10 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
         except AttributeError:
             continue
                 
-        logging.warning("Prams processing done")
-        logging.warning(response)
-        logging.warning(response.function_call.name)
-        logging.warning(params)
+        logger.warning("Prams processing done")
+        logger.warning(response)
+        logger.warning(response.function_call.name)
+        logger.warning(params)
 
         function_name = response.function_call.name
 
@@ -80,9 +80,9 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
                             [function_name, params, api_response]
                     )
 
-        logging.warning("Function Response complete")
+        logger.warning("Function Response complete")
 
-        logging.warning(api_response)
+        logger.warning(api_response)
 
         parts.append(Part.from_function_response(
                     name=function_name,
@@ -94,7 +94,7 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
 
         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
-    logging.warning("Making gemin call for api response")
+    logger.warning("Making gemin call for api response")
 
     # response = st.session_state.chat.send_message(
     #             parts
@@ -103,49 +103,49 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
     response = handle_gemini15_chat(parts)
 
             
-    logging.warning("gemini api response completed")
+    logger.warning("gemini api response completed")
     return response,backend_details
 
 
 def handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     response = response.candidates[0].content.parts[0]
 
-    logging.warning(response)
-    logging.warning("First Resonse done")
+    logger.warning(response)
+    logger.warning("First Resonse done")
 
     function_calling_in_process = True
     while function_calling_in_process:
         try:
-            logging.warning("Function loop starting")
+            logger.warning("Function loop starting")
             params = {}
             for key, value in response.function_call.args.items():
                 params[key] = value
                     
-            logging.warning("Prams processing done")
-            logging.warning(response)
-            logging.warning(response.function_call.name)
-            logging.warning(params)
+            logger.warning("Prams processing done")
+            logger.warning(response)
+            logger.warning(response.function_call.name)
+            logger.warning(params)
 
             function_name = response.function_call.name
 
             if function_name in helperbqfunction.function_handler.keys():
-                logging.warning("BQ function found")
+                logger.warning("BQ function found")
                 api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                 api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
 
             if function_name in helperfinhub.function_handler.keys():
-                logging.warning("finhub function found")
+                logger.warning("finhub function found")
                 api_response = helperfinhub.function_handler[function_name](params)
                 api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
 
-            logging.warning("Function Response complete")
+            logger.warning("Function Response complete")
 
-            logging.warning(api_response)
-            logging.warning("Making gemin call for api response")
+            logger.warning(api_response)
+            logger.warning("Making gemin call for api response")
 
             # response = st.session_state.chat.send_message(
             #             Part.from_function_response(
@@ -166,15 +166,15 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
 
 
 
-            logging.warning("Function Response complete")
+            logger.warning("Function Response complete")
 
 
             backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
                     
-            logging.warning("gemini api response completed")
-            logging.warning(response)
-            logging.warning("next call ready")
-            logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+            logger.warning("gemini api response completed")
+            logger.warning(response)
+            logger.warning("next call ready")
+            logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
             if len(response.candidates[0].content.parts) >1:
                 response, backend_details = handel_gemini15_parallel_func(handle_api_response,
                                                                         response,
@@ -186,18 +186,18 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
 
 
         except AttributeError as e:
-            logging.warning(e)
+            logger.warning(e)
             function_calling_in_process = False
     return response,backend_details
 
 def handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent):
-    logging.warning("Starting parallal function resonse loop")
+    logger.warning("Starting parallal function resonse loop")
     global stringoutputcount
     parts=[]
     function_parts = []
     for response in response.candidates[0].content.parts:
-        logging.warning("Function loop starting")
-        logging.warning(response)
+        logger.warning("Function loop starting")
+        logger.warning(response)
         params = {}
         try:
             for key, value in response.function_call.args.items():
@@ -205,10 +205,10 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
         except AttributeError:
             continue
                 
-        logging.warning("Prams processing done")
-        logging.warning(response)
-        logging.warning(response.function_call.name)
-        logging.warning(params)
+        logger.warning("Prams processing done")
+        logger.warning(response)
+        logger.warning(response.function_call.name)
+        logger.warning(params)
 
         function_name = response.function_call.name
 
@@ -224,10 +224,10 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
                             [function_name, params, api_response]
                     )
 
-        logging.warning("Function Response complete")
+        logger.warning("Function Response complete")
         stringoutputcount = stringoutputcount + len(str(api_response))
-        logging.warning(f"""String output count is {stringoutputcount}""")
-        logging.warning(api_response)
+        logger.warning(f"""String output count is {stringoutputcount}""")
+        logger.warning(api_response)
         function_parts.append(response)
         parts.append(types.Part.from_function_response(
                     name=function_name,
@@ -239,7 +239,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
-    logging.warning("Making gemin call for api response")
+    logger.warning("Making gemin call for api response")
 
     # response = st.session_state.chat.send_message(
     #             parts
@@ -247,7 +247,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
     response, functioncontent = handle_gemini20_chat(parts, function_parts, functioncontent)
 
-    logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+    logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
     #testing
     st.session_state.aicontent.append(response.candidates[0].content)
     #testing
@@ -260,49 +260,49 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
                                                                         backend_details, functioncontent)
 
             
-    logging.warning("gemini api response completed")
+    logger.warning("gemini api response completed")
     return response,backend_details, functioncontent
 
 def handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent):
     response = response.candidates[0].content.parts[0]
     global stringoutputcount
-    logging.warning(response)
-    logging.warning("First Resonse done")
+    logger.warning(response)
+    logger.warning("First Resonse done")
 
     function_calling_in_process = True
     while function_calling_in_process:
         try:
-            logging.warning("Function loop starting")
+            logger.warning("Function loop starting")
             params = {}
             for key, value in response.function_call.args.items():
                 params[key] = value
                     
-            logging.warning("Prams processing done")
-            logging.warning(response)
-            logging.warning(response.function_call.name)
-            logging.warning(params)
+            logger.warning("Prams processing done")
+            logger.warning(response)
+            logger.warning(response.function_call.name)
+            logger.warning(params)
 
             function_name = response.function_call.name
 
             if function_name in helperbqfunction.function_handler.keys():
-                logging.warning("BQ function found")
+                logger.warning("BQ function found")
                 api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
                 api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
 
             if function_name in helperfinhub.function_handler.keys():
-                logging.warning("finhub function found")
+                logger.warning("finhub function found")
                 api_response = helperfinhub.function_handler[function_name](params)
                 api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
 
-            logging.warning("Function Response complete")
+            logger.warning("Function Response complete")
             stringoutputcount = stringoutputcount + len(str(api_response))
-            logging.warning(f"""String output count is {stringoutputcount}""")
-            logging.warning(api_response)
-            logging.warning("Making gemin call for api response")
+            logger.warning(f"""String output count is {stringoutputcount}""")
+            logger.warning(api_response)
+            logger.warning("Making gemin call for api response")
 
             # response = st.session_state.chat.send_message(
             #             Part.from_function_response(
@@ -323,15 +323,15 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
 
 
 
-            logging.warning("Function Response complete")
+            logger.warning("Function Response complete")
 
 
             backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
                     
-            logging.warning("gemini api response completed")
-            logging.warning(response)
-            logging.warning("next call ready")
-            logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+            logger.warning("gemini api response completed")
+            logger.warning(response)
+            logger.warning("next call ready")
+            logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
             #testing
             st.session_state.aicontent.append(response.candidates[0].content)
             #testing
@@ -347,31 +347,31 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
 
 
         except AttributeError as e:
-            logging.warning(e)
+            logger.warning(e)
             function_calling_in_process = False
     return response,backend_details, functioncontent
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini15_chat(parts):
-    logging.warning("Making actual multi gemini call")
+    logger.warning("Making actual multi gemini call")
     response = st.session_state.chat.send_message(
                 parts
     )
-    logging.warning("Multi call succeeded")
+    logger.warning("Multi call succeeded")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini15_chat_single(part):
-    logging.warning("Making actual single gemini call")
+    logger.warning("Making actual single gemini call")
     response = st.session_state.chat.send_message(
                 part
     )
-    logging.warning("Single call succeeded")
+    logger.warning("Single call succeeded")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini20_chat(parts, function_parts, functioncontent):
-    logging.warning("Making actual multi gemini call")
+    logger.warning("Making actual multi gemini call")
     # st.session_state.aicontent.append(function_parts)
     # st.session_state.aicontent.append(parts)
     functioncontent.append(function_parts)
@@ -384,14 +384,14 @@ def handle_gemini20_chat(parts, function_parts, functioncontent):
     except Exception as e:
         logging.error(e)
         raise e
-    logging.warning("Multi call succeeded")
-    logging.warning(response)
-    logging.warning("sending response back")
+    logger.warning("Multi call succeeded")
+    logger.warning(response)
+    logger.warning("sending response back")
     return response, functioncontent
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini20_chat_single(part, response, functioncontent):
-    logging.warning("Making actual single gemini call")
+    logger.warning("Making actual single gemini call")
     # st.session_state.aicontent.append(response)
     # st.session_state.aicontent.append(part)
     functioncontent.append(response)
@@ -404,7 +404,7 @@ def handle_gemini20_chat_single(part, response, functioncontent):
     except Exception as e:
         logging.error(e)
         raise e
-    logging.warning("Single call succeeded")
+    logger.warning("Single call succeeded")
     return response, functioncontent
 
 
@@ -550,7 +550,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
     return backend_details
 
 def handle_gemini20():
-    logging.warning("Starting Gemini 2.0")
+    logger.warning("Starting Gemini 2.0")
     global stringoutputcount
 
     client = genai.Client(
@@ -582,7 +582,7 @@ def handle_gemini20():
 
 
         # Add user message to chat history
-        logging.warning(f"""Model is: {st.session_state.modelname}, Prompt is: {prompt}""")
+        logger.warning(f"""Model is: {st.session_state.modelname}, Prompt is: {prompt}""")
   
 
         st.session_state.messages.append({"role": "user", "content": prompt})
@@ -591,23 +591,23 @@ def handle_gemini20():
             full_response = ""
 
 
-            logging.warning("Configuring prompt")
+            logger.warning("Configuring prompt")
             st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
             functioncontent = []
             functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
-            logging.warning("Conversation history start")
-            logging.warning(st.session_state.aicontent)
-            logging.warning("Conversation history end")
-            logging.warning("Prompt configured, calling Gemini...")
+            logger.warning("Conversation history start")
+            logger.warning(st.session_state.aicontent)
+            logger.warning("Conversation history end")
+            logger.warning("Prompt configured, calling Gemini...")
             response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                               contents=st.session_state.aicontent,
                                                               config=generate_config_20)
 
-            logging.warning("Gemini called, This is the start")
-            logging.warning(response)
-            logging.warning("The start is done")
+            logger.warning("Gemini called, This is the start")
+            logger.warning(response)
+            logger.warning("The start is done")
 
-            logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+            logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
 
             api_requests_and_responses = []
             backend_details = ""
@@ -637,9 +637,9 @@ def handle_gemini20():
                     "backend_details": backend_details,
                 }
             )
-            logging.warning(f"""Total string output count is {stringoutputcount}""")
-            logging.warning(st.session_state.aicontent)
-            logging.warning("This is the end of Gemini 2.0")
+            logger.warning(f"""Total string output count is {stringoutputcount}""")
+            logger.warning(st.session_state.aicontent)
+            logger.warning("This is the end of Gemini 2.0")
 
 
 
@@ -650,7 +650,7 @@ def handle_gemini20():
 
 
 def handle_gemini15():
-    logging.warning("Starting Gemini 1.5")
+    logger.warning("Starting Gemini 1.5")
     vertexai.init(project=PROJECT_ID, location=LOCATION)
     model = GenerativeModel(
         # "gemini-1.5-pro-002",
@@ -693,11 +693,11 @@ def handle_gemini15():
             
             response = st.session_state.chat.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
             safety_settings=safety_settings)
-            logging.warning("This is the start")
-            logging.warning(response)
-            logging.warning("The start is done")
+            logger.warning("This is the start")
+            logger.warning(response)
+            logger.warning("The start is done")
 
-            logging.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+            logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
 
             api_requests_and_responses = []
             backend_details = ""
@@ -731,8 +731,8 @@ def handle_gemini15():
 
 USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
 
-logging.warning(f"""Auth as bool is set to {USE_AUTHENTICATION}""")
-logging.warning(f"""Auth as string is set to {os.getenv('USEAUTH')}""")
+logger.warning(f"""Auth as bool is set to {USE_AUTHENTICATION}""")
+logger.warning(f"""Auth as string is set to {os.getenv('USEAUTH')}""")
 
 authenticator = Authenticate(
     secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
@@ -746,18 +746,18 @@ authenticator = Authenticate(
 #     st.markdown(f'[Login]({authorization_url})')
 #     st.link_button('Login', authorization_url)
 
-logging.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
+logger.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 
 clientinfo = helperstreamlit.get_remote_ip()
-logging.warning(f"""Client info is {clientinfo}""")
+logger.warning(f"""Client info is {clientinfo}""")
 
 
 authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))
 
-logging.warning(f"""final auth status is {authstatus}""")
+logger.warning(f"""final auth status is {authstatus}""")
 
 if authstatus:
-    logging.warning("Auth Starting")
+    logger.warning("Auth Starting")
     time.sleep(5)
     authenticator.check_authentification()
     st.logo("images/mmlogo1.png")
@@ -775,12 +775,12 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         st.text("MarketMind")
 
     if "modelname" not in st.session_state:
-        logging.warning("model name session state not initialised")
+        logger.warning("model name session state not initialised")
         # st.session_state.modelname = "gemini-1.5-pro-002"
         select_model()
-        # logging.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
+        # logger.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:
-        logging.warning(f"""model name session state initialised and it is: {st.session_state.modelname}""")
+        logger.warning(f"""model name session state initialised and it is: {st.session_state.modelname}""")
         st.image("images/mmlogo1.png")
         if USE_AUTHENTICATION:
             st.title(f"""{st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")

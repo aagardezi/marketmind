@@ -52,7 +52,7 @@ def access_secret_version(project_id, secret_id, version_id="latest"):
     # Access the secret version.
     response = client.access_secret_version(request={"name": name})
 
-    logging.warning(response.payload.data.decode("UTF-8"))
+    logger.warning(response.payload.data.decode("UTF-8"))
     # Return the decoded payload.
     return response.payload.data.decode("UTF-8")
 
@@ -63,11 +63,11 @@ def create_temp_credentials_file(credentials_json):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix='.json') as temp_file:
         temp_file.write(credentials_json)
     temp_file_path = temp_file.name
-    logging.warning(temp_file_path)
+    logger.warning(temp_file_path)
     
     with open(temp_file_path, 'r', encoding='utf-8') as f:  # Opens the file in read mode with UTF-8 encoding
         contents = f.read()
-        logging.warning(contents)
+        logger.warning(contents)
 
     return temp_file_path
 
@@ -114,7 +114,7 @@ def init_logging():
     logger.propagate = False
     logger.setLevel(logging.INFO)
     # in the formatter, use the variable "user_ip"
-    formatter = logging.Formatter("%(name)s %(levelname)s [session=%(user_ip)s] - %(message)s")
+    formatter = logging.Formatter("[%(name)s:%(user_ip)s] %(levelname)s - %(message)s")
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
     handler.addFilter(ContextFilter())

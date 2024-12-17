@@ -6,7 +6,7 @@ from google.cloud import secretmanager
 import google.auth
 
 
-
+logger = logging.getLogger("MarketMind")
 
 def get_text_from_url(url):
     try:

@@ -1,5 +1,8 @@
 import finnhub
 import helpercode
+import logging
+
+logger = logging.getLogger("MarketMind")
 
 PROJECT_ID = helpercode.get_project_id()
 

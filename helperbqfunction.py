@@ -2,6 +2,8 @@ import streamlit as st
 from google.cloud import bigquery
 import logging
 
+logger = logging.getLogger("MarketMind")
+
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = "genaillentsearch"
 

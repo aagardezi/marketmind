@@ -29,7 +29,7 @@ float_init(theme=True, include_unstable_primary=False)
 
 #logging initialised
 helpercode.init_logging()
-logger = logging.getLogger("foobar")
+logger = logging.getLogger("MarketMind")
 
 
 stringoutputcount = 0

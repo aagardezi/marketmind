@@ -99,7 +99,7 @@ def _get_session():
 
 class ContextFilter(logging.Filter):
     def filter(self, record):
-        record.user_ip = _get_session()
+        record.user_ip = _get_session().id
         return super().filter(record)
 
 def init_logging():
@@ -108,7 +108,7 @@ def init_logging():
     # and duplicate the messages
 
     # create a custom logger
-    logger = logging.getLogger("foobar")
+    logger = logging.getLogger("MarketMind")
     if logger.handlers:  # logger is already setup, don't setup again
         return
     logger.propagate = False

@@ -28,7 +28,7 @@ st.set_page_config(layout="wide")
 float_init(theme=True, include_unstable_primary=False)
 
 #logging initialised
-helpercode.init_logger()
+helpercode.init_logging()
 logger = logging.getLogger("foobar")
 
 

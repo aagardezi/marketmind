@@ -49,6 +49,7 @@ def select_model():
         st.session_state.modelname = modelname
         st.rerun()
 
+
 def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     logger.warning("Starting parallal function resonse loop")
     parts=[]
@@ -68,18 +69,6 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
         logger.warning(params)
 
         function_name = response.function_call.name
-
-        # if function_name in helperbqfunction.function_handler.keys():
-        #     api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-        #     api_requests_and_responses.append(
-        #                     [function_name, params, api_response]
-        #             )
-
-        # if function_name in helperfinhub.function_handler.keys():
-        #     api_response = helperfinhub.function_handler[function_name](params)
-        #     api_requests_and_responses.append(
-        #                     [function_name, params, api_response]
-        #             )
 
         api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
@@ -131,35 +120,12 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
 
             function_name = response.function_call.name
 
-            # if function_name in helperbqfunction.function_handler.keys():
-            #     logger.warning("BQ function found")
-            #     api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-            #     api_requests_and_responses.append(
-            #                     [function_name, params, api_response]
-            #             )
-
-            # if function_name in helperfinhub.function_handler.keys():
-            #     logger.warning("finhub function found")
-            #     api_response = helperfinhub.function_handler[function_name](params)
-            #     api_requests_and_responses.append(
-            #                     [function_name, params, api_response]
-            #             )
-
             api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
             logger.warning("Function Response complete")
 
             logger.warning(api_response)
             logger.warning("Making gemin call for api response")
-
-            # response = st.session_state.chat.send_message(
-            #             Part.from_function_response(
-            #                 name=function_name,
-            #                 response={
-            #                     "content": api_response,
-            #                 },
-            #             ),
-            # )
             
             part = Part.from_function_response(
                             name=function_name,
@@ -217,18 +183,6 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
         function_name = response.function_call.name
 
-        # if function_name in helperbqfunction.function_handler.keys():
-        #     api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-        #     api_requests_and_responses.append(
-        #                     [function_name, params, api_response]
-        #             )
-
-        # if function_name in helperfinhub.function_handler.keys():
-        #     api_response = helperfinhub.function_handler[function_name](params)
-        #     api_requests_and_responses.append(
-        #                     [function_name, params, api_response]
-        #             )
-
         api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
         logger.warning("Function Response complete")
@@ -247,10 +201,6 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
     logger.warning("Making gemin call for api response")
-
-    # response = st.session_state.chat.send_message(
-    #             parts
-    #         )
 
     functioncontent.append(function_parts)
     functioncontent.append(parts)
@@ -307,6 +257,7 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
                                 "result": api_response,
                             },
             )
+
             functioncontent.append(response)
             functioncontent.append(part)
             response, functioncontent = handle_gemini20_chat_single(functioncontent)
@@ -587,13 +538,6 @@ def handle_gemini20():
         location=LOCATION
     )
 
-    # if "messages" not in st.session_state:
-    #     st.session_state.messages = []
-
-    # for message in st.session_state.messages:
-    #     with st.chat_message(message["role"]):
-    #         st.markdown(message["content"])
-
     if "chat" not in st.session_state:
         st.session_state.chat = client
     
@@ -691,20 +635,9 @@ def handle_gemini15():
     response=None
 
 
-    # if "messages" not in st.session_state:
-    #     st.session_state.messages = []
-
-    # for message in st.session_state.messages:
-    #     with st.chat_message(message["role"]):
-    #         st.markdown(message["content"])
-
     if "chat" not in st.session_state:
         st.session_state.chat = model.start_chat()
 
-    # if "client" not in st.session_state:
-    #     st.session_state.client = bigquery.Client(project="genaillentsearch")
-
-    # with st.container():
     if prompt := st.chat_input("What is up?"):
 
         # # Display user message in chat message container

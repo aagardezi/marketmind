@@ -252,7 +252,9 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
     #             parts
     #         )
 
-    response, functioncontent = handle_gemini20_chat(parts, function_parts, functioncontent)
+    functioncontent.append(function_parts)
+    functioncontent.append(parts)
+    response, functioncontent = handle_gemini20_chat(functioncontent)
 
     logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
     #testing
@@ -305,7 +307,9 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
                                 "result": api_response,
                             },
             )
-            response, functioncontent = handle_gemini20_chat_single(part, response, functioncontent)
+            functioncontent.append(response)
+            functioncontent.append(part)
+            response, functioncontent = handle_gemini20_chat_single(functioncontent)
 
 
 
@@ -383,12 +387,12 @@ def handle_gemini15_chat_single(part):
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
-def handle_gemini20_chat(parts, function_parts, functioncontent):
+def handle_gemini20_chat(functioncontent):
     logger.warning("Making actual multi gemini call")
     # st.session_state.aicontent.append(function_parts)
     # st.session_state.aicontent.append(parts)
-    functioncontent.append(function_parts)
-    functioncontent.append(parts)
+    # functioncontent.append(function_parts)
+    # functioncontent.append(parts)
     try:
         response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                             #   contents=st.session_state.aicontent,
@@ -403,12 +407,12 @@ def handle_gemini20_chat(parts, function_parts, functioncontent):
     return response, functioncontent
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
-def handle_gemini20_chat_single(part, response, functioncontent):
+def handle_gemini20_chat_single(functioncontent):
     logger.warning("Making actual single gemini call")
     # st.session_state.aicontent.append(response)
     # st.session_state.aicontent.append(part)
-    functioncontent.append(response)
-    functioncontent.append(part)
+    # functioncontent.append(response)
+    # functioncontent.append(part)
     try:
         response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
                                                             #   contents=st.session_state.aicontent,

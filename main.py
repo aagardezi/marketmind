@@ -559,12 +559,12 @@ def handle_gemini20():
         location=LOCATION
     )
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    # if "messages" not in st.session_state:
+    #     st.session_state.messages = []
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    # for message in st.session_state.messages:
+    #     with st.chat_message(message["role"]):
+    #         st.markdown(message["content"])
 
     if "chat" not in st.session_state:
         st.session_state.chat = client
@@ -663,18 +663,18 @@ def handle_gemini15():
     response=None
 
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    # if "messages" not in st.session_state:
+    #     st.session_state.messages = []
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    # for message in st.session_state.messages:
+    #     with st.chat_message(message["role"]):
+    #         st.markdown(message["content"])
 
     if "chat" not in st.session_state:
         st.session_state.chat = model.start_chat()
 
-    if "client" not in st.session_state:
-        st.session_state.client = bigquery.Client(project="genaillentsearch")
+    # if "client" not in st.session_state:
+    #     st.session_state.client = bigquery.Client(project="genaillentsearch")
 
     # with st.container():
     if prompt := st.chat_input("What is up?"):
@@ -786,6 +786,17 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.title(f"""{st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
         else:
             st.title(f"""MarketMind: built using {st.session_state.modelname}""")
+        
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+        
+        if "client" not in st.session_state:
+            st.session_state.client = bigquery.Client(project="genaillentsearch")
+
         if st.session_state.modelname.startswith("gemini-1.5"):
             handle_gemini15()
         else:

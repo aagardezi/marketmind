@@ -4,6 +4,7 @@ import tempfile
 import logging
 from google.cloud import secretmanager
 import google.auth
+import datetime
 
 
 logger = logging.getLogger("MarketMind")
@@ -121,3 +122,10 @@ def init_logging():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+
+def get_currentdate():
+    return {'current_date': f"""{datetime.date.today()}"""}
+
+function_handler = {
+    "current_date": get_currentdate,
+}

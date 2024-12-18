@@ -17,6 +17,7 @@ import helperbqfunction
 import geminifunctionsbq
 import geminifunctionfinhub
 import gemini20functionfinhub
+import gemini20functiongeneral
 
 import helperfinhub
 import helpercode
@@ -68,17 +69,19 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
 
         function_name = response.function_call.name
 
-        if function_name in helperbqfunction.function_handler.keys():
-            api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-            api_requests_and_responses.append(
-                            [function_name, params, api_response]
-                    )
+        # if function_name in helperbqfunction.function_handler.keys():
+        #     api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+        #     api_requests_and_responses.append(
+        #                     [function_name, params, api_response]
+        #             )
 
-        if function_name in helperfinhub.function_handler.keys():
-            api_response = helperfinhub.function_handler[function_name](params)
-            api_requests_and_responses.append(
-                            [function_name, params, api_response]
-                    )
+        # if function_name in helperfinhub.function_handler.keys():
+        #     api_response = helperfinhub.function_handler[function_name](params)
+        #     api_requests_and_responses.append(
+        #                     [function_name, params, api_response]
+        #             )
+
+        api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
         logger.warning("Function Response complete")
 
@@ -128,19 +131,21 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
 
             function_name = response.function_call.name
 
-            if function_name in helperbqfunction.function_handler.keys():
-                logger.warning("BQ function found")
-                api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                api_requests_and_responses.append(
-                                [function_name, params, api_response]
-                        )
+            # if function_name in helperbqfunction.function_handler.keys():
+            #     logger.warning("BQ function found")
+            #     api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+            #     api_requests_and_responses.append(
+            #                     [function_name, params, api_response]
+            #             )
 
-            if function_name in helperfinhub.function_handler.keys():
-                logger.warning("finhub function found")
-                api_response = helperfinhub.function_handler[function_name](params)
-                api_requests_and_responses.append(
-                                [function_name, params, api_response]
-                        )
+            # if function_name in helperfinhub.function_handler.keys():
+            #     logger.warning("finhub function found")
+            #     api_response = helperfinhub.function_handler[function_name](params)
+            #     api_requests_and_responses.append(
+            #                     [function_name, params, api_response]
+            #             )
+
+            api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
             logger.warning("Function Response complete")
 
@@ -212,17 +217,19 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
         function_name = response.function_call.name
 
-        if function_name in helperbqfunction.function_handler.keys():
-            api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-            api_requests_and_responses.append(
-                            [function_name, params, api_response]
-                    )
+        # if function_name in helperbqfunction.function_handler.keys():
+        #     api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+        #     api_requests_and_responses.append(
+        #                     [function_name, params, api_response]
+        #             )
 
-        if function_name in helperfinhub.function_handler.keys():
-            api_response = helperfinhub.function_handler[function_name](params)
-            api_requests_and_responses.append(
-                            [function_name, params, api_response]
-                    )
+        # if function_name in helperfinhub.function_handler.keys():
+        #     api_response = helperfinhub.function_handler[function_name](params)
+        #     api_requests_and_responses.append(
+        #                     [function_name, params, api_response]
+        #             )
+
+        api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
         logger.warning("Function Response complete")
         stringoutputcount = stringoutputcount + len(str(api_response))
@@ -284,19 +291,7 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
 
             function_name = response.function_call.name
 
-            if function_name in helperbqfunction.function_handler.keys():
-                logger.warning("BQ function found")
-                api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
-                api_requests_and_responses.append(
-                                [function_name, params, api_response]
-                        )
-
-            if function_name in helperfinhub.function_handler.keys():
-                logger.warning("finhub function found")
-                api_response = helperfinhub.function_handler[function_name](params)
-                api_requests_and_responses.append(
-                                [function_name, params, api_response]
-                        )
+            api_response = handle_external_function(api_requests_and_responses, params, function_name)
 
             logger.warning("Function Response complete")
             stringoutputcount = stringoutputcount + len(str(api_response))
@@ -341,6 +336,33 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
             logger.warning(e)
             function_calling_in_process = False
     return response,backend_details, functioncontent
+
+
+
+def handle_external_function(api_requests_and_responses, params, function_name):
+    """This function handesl the call to the external function once Gemini has determined a function call is required"""
+    if function_name in helpercode.function_handler.keys():
+        logger.warning("General function found")
+        api_response = helpercode.function_handler[function_name]()
+        api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
+
+    if function_name in helperbqfunction.function_handler.keys():
+        logger.warning("BQ function found")
+        api_response = helperbqfunction.function_handler[function_name](st.session_state.client, params)
+        api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
+
+    if function_name in helperfinhub.function_handler.keys():
+        logger.warning("finhub function found")
+        api_response = helperfinhub.function_handler[function_name](params)
+        api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
+                
+    return api_response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini15_chat(parts):
@@ -445,6 +467,7 @@ sql_query20_tool = types.Tool(
         gemini20functionfinhub.insider_sentiment,
         gemini20functionfinhub.financials_reported,
         gemini20functionfinhub.sec_filings,
+        gemini20functiongeneral.current_date
     ],
 )
 
@@ -452,21 +475,30 @@ TEMP_INSTRUCTION = f"""lseg tick history data and uses RIC and ticker symbols to
                         When writing SQL query ensure you use the Date_Time field in the where clause.
                         {PROJECT_ID}.{BIGQUERY_DATASET_ID}.lse_normalised table is the main trade table
                         RIC is the column to search for a stock
-                        When accessing news use the symbol for the company instead of the RIC cod."""
+                        When accessing news use the symbol for the company instead of the RIC cod.
+                        If a function call reqires a date range and one is not supplied always use the current year.
+                        In order to get the right date use the current_date function."""
 
-SYSTEM_INSTRUCTION = f"""You are a financial analyst that understands financial data. Do the analysis like and asset management 
+SYSTEM_INSTRUCTION = """You are a financial analyst that understands financial data. Do the analysis like and asset management 
                             investor and create a detaild report
                             You can lookup the symbol using the symbol lookup function. Make sure to run the symbol_lookup 
                             before any subsequent functions.
                             When doing an analysis of the company, include the company profile, company news, 
                             company basic financials and an analysis of the peers
                             Also get the insider sentiment and add a section on that. Include a section on SEC filings. If a tool 
-                            requires a data and its not present the use the current year"""
+                            requires a data and its not present the use the current year
+                            If a function call reqires a date range and one is not supplied always use the current year.
+                            In order to get the right date use the current_date function.
+                            Once you have the current date, use it to determine the start and end date for the year.
+                            Use those as the start and end dates in fuction calls where the user has not supplied a date range."""
 
 PROMPT_ENHANCEMENT = """ If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
                             requires a data and its not present the use the current year. Always evalulate if the Function Call is
-                            required to answer and perform function calling using the tools provided. Always include a disclaimer at
-                            the end showing this report has been generated by AI and thus does not constitute financial advice"""
+                            required to answer and perform function calling using the tools provided. 
+                            If a function call reqires a date range and one is not supplied always use the current year.
+                            In order to get the right date use the current_date function.
+                            Always include a disclaimer at the end showing this report has been generated by AI and thus 
+                            does not constitute financial advice"""
 
 generation_config = {
     "max_output_tokens": 8192,

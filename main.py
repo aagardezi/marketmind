@@ -490,7 +490,9 @@ SYSTEM_INSTRUCTION = """You are a financial analyst that understands financial d
                             If a function call reqires a date range and one is not supplied always use the current year.
                             In order to get the right date use the current_date function.
                             Once you have the current date, use it to determine the start and end date for the year.
-                            Use those as the start and end dates in fuction calls where the user has not supplied a date range."""
+                            Use those as the start and end dates in fuction calls where the user has not supplied a date range.
+                            When identifing a symbol for a company from a list of symbols make sure its a primary symbol.
+                            Usually primary symbols dont have a dot . in the name"""
 
 PROMPT_ENHANCEMENT = """ If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
                             requires a data and its not present the use the current year. Always evalulate if the Function Call is

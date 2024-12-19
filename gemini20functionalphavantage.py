@@ -4,9 +4,9 @@ market_sentiment = dict(
     parameters={
         "type": "OBJECT",
         "properties": {
-            "company_name": {
+            "symbol": {
                 "type": "STRING",
-                "description": "Name of a company",
+                "description": "Symbol for the companyy",
             },
         },
     },
@@ -18,9 +18,9 @@ monthly_stock_price = dict(
     parameters={
         "type": "OBJECT",
         "properties": {
-            "company_name": {
+            "symbol": {
                 "type": "STRING",
-                "description": "Name of a company",
+                "description": "Symbol for the company",
             },
         },
     },

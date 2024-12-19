@@ -55,6 +55,12 @@ def select_model():
         st.session_state.modelname = modelname
         st.rerun()
 
+@st.dialog("View System Instructions")
+def view_systeminstruction():
+    logger.warning("Viewing System Instruction")
+    st.markdown(SYSTEM_INSTRUCTION)
+
+
 
 def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
     logger.warning("Starting parallal function resonse loop")
@@ -846,6 +852,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         st.text("MarketMind")
         if st.button("Reload"):
             pass
+        if st.button("System Instruction"):
+            view_systeminstruction()
 
     if "modelname" not in st.session_state:
         logger.warning("model name session state not initialised")

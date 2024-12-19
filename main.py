@@ -783,6 +783,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             if st.button('Log out'):
                 authenticator.logout()
         st.text("MarketMind")
+        if st.button("Reload"):
+            pass
 
     if "modelname" not in st.session_state:
         logger.warning("model name session state not initialised")

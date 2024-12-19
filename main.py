@@ -19,8 +19,10 @@ import geminifunctionsbq
 import geminifunctionfinhub
 import gemini20functionfinhub
 import gemini20functiongeneral
+import gemini20functionalphavantage
 
 import helperfinhub
+import helperalphavantage
 import helpercode
 import helperstreamlit
 
@@ -468,7 +470,9 @@ sql_query20_tool = types.Tool(
         gemini20functionfinhub.insider_sentiment,
         gemini20functionfinhub.financials_reported,
         gemini20functionfinhub.sec_filings,
-        gemini20functiongeneral.current_date
+        gemini20functiongeneral.current_date,
+        gemini20functionalphavantage.monthly_stock_price,
+        gemini20functionalphavantage.market_sentiment,
     ],
 )
 
@@ -493,7 +497,9 @@ SYSTEM_INSTRUCTION = """You are a financial analyst that understands financial d
                             Once you have the current date, use it to determine the start and end date for the year.
                             Use those as the start and end dates in fuction calls where the user has not supplied a date range.
                             When identifing a symbol for a company from a list of symbols make sure its a primary symbol.
-                            Usually primary symbols dont have a dot . in the name"""
+                            Usually primary symbols dont have a dot . in the name
+                            When creating the report also inlcude a seciton on market sentiment (accessed via a tool) and 
+                            use the monthly stock prices (obtained via a tool) and review it as part of the analysis"""
 
 PROMPT_ENHANCEMENT = """ If the question relates to news use the stock symbol ticker and not the RIC code. If a tool 
                             requires a data and its not present the use the current year. Always evalulate if the Function Call is

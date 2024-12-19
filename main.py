@@ -1,4 +1,5 @@
 import time
+import traceback
 import os
 import streamlit as st
 from streamlit_float import *
@@ -837,9 +838,16 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")
-
-        if st.session_state.modelname.startswith("gemini-1.5"):
-            handle_gemini15()
-        else:
-            handle_gemini20()
+        try:
+            if st.session_state.modelname.startswith("gemini-1.5"):
+                handle_gemini15()
+            else:
+                handle_gemini20()
+        except Exception as e:
+            with st.chat_message("error",avatar=":material/chat_error:"):
+                message_placeholder = st.empty()
+                with message_placeholder.container():
+                    with st.expander("Error message and stack trace"):
+                        st.markdown(f"An error occurred: {e}")
+                        st.markdown(traceback.format_exc())
                 

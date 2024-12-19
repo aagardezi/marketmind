@@ -318,6 +318,13 @@ def handle_external_function(api_requests_and_responses, params, function_name):
         api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
+    
+    if function_name in helperalphavantage.function_handler.keys():
+        logger.warning("alpha vantage function found")
+        api_response = helperalphavantage.function_handler[function_name](params)
+        api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
                 
     return api_response
 

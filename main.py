@@ -354,6 +354,7 @@ def handle_gemini20_chat(functioncontent):
         raise e
     logger.warning("Multi call succeeded")
     logger.warning(response)
+    logger.warning(f"""Tokens in use: {response.usage_metadata}""")
     logger.warning("sending response back")
     return response
 
@@ -373,6 +374,9 @@ def handle_gemini20_chat_single(functioncontent):
         logging.error(e)
         raise e
     logger.warning("Single call succeeded")
+    logger.warning(response)
+    logger.warning(f"""Tokens in use: {response.usage_metadata}""")
+    logger.warning("sending response back")
     return response
 
 

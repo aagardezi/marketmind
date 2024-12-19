@@ -337,7 +337,7 @@ def handle_gemini15_chat(parts):
             "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
     logger.warning("sending response back")
     return response
 
@@ -360,7 +360,7 @@ def handle_gemini15_chat_single(part):
             "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
     logger.warning("sending response back")
     return response
 
@@ -377,7 +377,7 @@ def handle_gemini20_chat(functioncontent):
                                                               contents=functioncontent,
                                                               config=generate_config_20)
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
         raise e
     logger.warning("Multi call succeeded")
     logger.warning(response)
@@ -392,7 +392,7 @@ def handle_gemini20_chat(functioncontent):
             "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
     logger.warning("sending response back")
     return response
 
@@ -409,7 +409,7 @@ def handle_gemini20_chat_single(functioncontent):
                                                               contents=functioncontent,
                                                               config=generate_config_20)
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
         raise e
     logger.warning("Single call succeeded")
     logger.warning(response)
@@ -424,7 +424,7 @@ def handle_gemini20_chat_single(functioncontent):
             "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
     logger.warning("sending response back")
     return response
 
@@ -825,6 +825,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
                     md5cache.append(message["md5has"])
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"])
+                else:
+                    logger.warning("Message already restored, ignoring")
             else:
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])

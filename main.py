@@ -329,6 +329,16 @@ def handle_gemini15_chat(parts):
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
     logger.warning("sending response back")
+    try:
+        full_response = response.text
+        st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": full_response,
+        }
+        )
+    except Exception as e:
+        logging.error(e)
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -341,6 +351,16 @@ def handle_gemini15_chat_single(part):
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
     logger.warning("sending response back")
+    try:
+        full_response = response.text
+        st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": full_response,
+        }
+        )
+    except Exception as e:
+        logging.error(e)
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -362,6 +382,16 @@ def handle_gemini20_chat(functioncontent):
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
     logger.warning("sending response back")
+    try:
+        full_response = response.text
+        st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": full_response,
+        }
+        )
+    except Exception as e:
+        logging.error(e)
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -383,6 +413,16 @@ def handle_gemini20_chat_single(functioncontent):
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
     logger.warning("sending response back")
+    try:
+        full_response = response.text
+        st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": full_response,
+        }
+        )
+    except Exception as e:
+        logging.error(e)
     return response
 
 

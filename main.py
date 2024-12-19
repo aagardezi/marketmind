@@ -88,10 +88,6 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
 
     logger.warning("Making gemini call for api response")
 
-    # response = st.session_state.chat.send_message(
-    #             parts
-    #         )
-
     response = handle_gemini15_chat(parts)
 
             
@@ -328,17 +324,17 @@ def handle_gemini15_chat(parts):
     logger.warning("Multi call succeeded")
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    logger.warning("sending response back")
+    
     try:
+        logger.warning("Adding messages to session state")
         full_response = response.text
-        st.session_state.messages.append(
-        {
+        st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
-        }
-        )
+        })
     except Exception as e:
         logging.error(e)
+    logger.warning("sending response back")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -350,17 +346,17 @@ def handle_gemini15_chat_single(part):
     logger.warning("Single call succeeded")
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    logger.warning("sending response back")
+    
     try:
+        logger.warning("Adding messages to session state")
         full_response = response.text
-        st.session_state.messages.append(
-        {
+        st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
-        }
-        )
+        })
     except Exception as e:
         logging.error(e)
+    logger.warning("sending response back")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -381,17 +377,17 @@ def handle_gemini20_chat(functioncontent):
     logger.warning("Multi call succeeded")
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    logger.warning("sending response back")
+    
     try:
+        logger.warning("Adding messages to session state")
         full_response = response.text
-        st.session_state.messages.append(
-        {
+        st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
-        }
-        )
+        })
     except Exception as e:
         logging.error(e)
+    logger.warning("sending response back")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -412,17 +408,17 @@ def handle_gemini20_chat_single(functioncontent):
     logger.warning("Single call succeeded")
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    logger.warning("sending response back")
+    
     try:
+        logger.warning("Adding messages to session state")
         full_response = response.text
-        st.session_state.messages.append(
-        {
+        st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
-        }
-        )
+        })
     except Exception as e:
         logging.error(e)
+    logger.warning("sending response back")
     return response
 
 
@@ -438,10 +434,6 @@ sql_query_tool = Tool(
         geminifunctionsbq.list_tables_func,
         geminifunctionsbq.get_table_func,
         geminifunctionsbq.sql_query_func,
-        # geminifunctiongetnews.get_company_overview,
-        # # get_stock_price,
-        # geminifunctiongetnews.get_company_news,
-        # geminifunctiongetnews.get_news_with_sentiment,
         geminifunctionfinhub.symbol_lookup,
         geminifunctionfinhub.company_news,
         geminifunctionfinhub.company_profile,
@@ -460,10 +452,6 @@ sql_query20_tool = types.Tool(
         # geminifunctionsbq.list_tables_func,
         # geminifunctionsbq.get_table_func,
         # geminifunctionsbq.sql_query_func,
-        # geminifunctiongetnews.get_company_overview,
-        # # get_stock_price,
-        # geminifunctiongetnews.get_company_news,
-        # geminifunctiongetnews.get_news_with_sentiment,
         gemini20functionfinhub.symbol_lookup,
         gemini20functionfinhub.company_news,
         gemini20functionfinhub.company_profile,
@@ -801,13 +789,23 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.title(f"""MarketMind: built using {st.session_state.modelname}""")
         
         st.text("Currently only available for US Securities")
+
+        if "sessioncount" not in st.session_state:
+            st.session_state.sessioncount = 0
+        else:
+            st.session_state.sessioncount = st.session_state.sessioncount +1
+        
+        logger.warning(f"""Session count is {st.session_state.sessioncount}""")
         
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
+        logger.warning("Checking if messages to restore")
         for message in st.session_state.messages:
+            logger.warning("Restoring messages")
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
+        logger.warning("Messages restored")
         
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")

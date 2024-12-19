@@ -5,6 +5,7 @@ import logging
 from google.cloud import secretmanager
 import google.auth
 import datetime
+import hashlib
 
 
 logger = logging.getLogger("MarketMind")
@@ -121,6 +122,20 @@ def init_logging():
     handler.addFilter(ContextFilter())
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+def get_md5_hash(text):
+  """Calculates the MD5 hash of a given text string.
+
+  Args:
+    text: The input string.
+
+  Returns:
+    The hexadecimal representation of the MD5 hash.
+  """
+  m = hashlib.md5()
+  m.update(text.encode('utf-8'))  # Encode the string to bytes using UTF-8
+  return m.hexdigest()
 
 
 def get_currentdate():

@@ -24,6 +24,9 @@ import helpercode
 import helperstreamlit
 
 
+
+
+
 st.set_page_config(layout="wide")
 # st.set_page_config()
 float_init(theme=True, include_unstable_primary=False)
@@ -331,6 +334,7 @@ def handle_gemini15_chat(parts):
         st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
+            "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
         logging.error(e)
@@ -353,6 +357,7 @@ def handle_gemini15_chat_single(part):
         st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
+            "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
         logging.error(e)
@@ -384,6 +389,7 @@ def handle_gemini20_chat(functioncontent):
         st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
+            "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
         logging.error(e)
@@ -415,6 +421,7 @@ def handle_gemini20_chat_single(functioncontent):
         st.session_state.messages.append({
             "role": "assistant",
             "content": full_response,
+            "md5has" : helpercode.get_md5_hash(full_response)
         })
     except Exception as e:
         logging.error(e)
@@ -646,6 +653,7 @@ def handle_gemini20():
                     "role": "assistant",
                     "content": full_response,
                     "backend_details": backend_details,
+                    "md5has" : helpercode.get_md5_hash(full_response)
                 }
             )
             logger.warning(f"""Total string output count is {stringoutputcount}""")
@@ -723,6 +731,7 @@ def handle_gemini15():
                     "role": "assistant",
                     "content": full_response,
                     "backend_details": backend_details,
+                    "md5has" : helpercode.get_md5_hash(full_response)
                 }
             )
 
@@ -806,10 +815,18 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.session_state.messages = []
 
         logger.warning("Checking if messages to restore")
+        md5cache = []
         for message in st.session_state.messages:
             logger.warning("Restoring messages")
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+            if message["role"] in ["assistant"]:
+                if(message["md5has"] not in md5cache):
+                    md5cache.append(message["md5has"])
+                    with st.chat_message(message["role"]):
+                        st.markdown(message["content"])
+            else:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+
         logger.warning("Messages restored")
         
         if "client" not in st.session_state:

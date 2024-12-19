@@ -204,7 +204,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
     functioncontent.append(function_parts)
     functioncontent.append(parts)
-    response, functioncontent = handle_gemini20_chat(functioncontent)
+    response = handle_gemini20_chat(functioncontent)
 
     logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
     #testing
@@ -260,7 +260,7 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
 
             functioncontent.append(response)
             functioncontent.append(part)
-            response, functioncontent = handle_gemini20_chat_single(functioncontent)
+            response = handle_gemini20_chat_single(functioncontent)
 
 
 
@@ -355,7 +355,7 @@ def handle_gemini20_chat(functioncontent):
     logger.warning("Multi call succeeded")
     logger.warning(response)
     logger.warning("sending response back")
-    return response, functioncontent
+    return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini20_chat_single(functioncontent):
@@ -373,7 +373,7 @@ def handle_gemini20_chat_single(functioncontent):
         logging.error(e)
         raise e
     logger.warning("Single call succeeded")
-    return response, functioncontent
+    return response
 
 
 

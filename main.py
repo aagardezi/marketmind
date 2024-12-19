@@ -326,6 +326,9 @@ def handle_gemini15_chat(parts):
                 parts
     )
     logger.warning("Multi call succeeded")
+    logger.warning(response)
+    logger.warning(f"""Tokens in use: {response.usage_metadata}""")
+    logger.warning("sending response back")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
@@ -335,6 +338,9 @@ def handle_gemini15_chat_single(part):
                 part
     )
     logger.warning("Single call succeeded")
+    logger.warning(response)
+    logger.warning(f"""Tokens in use: {response.usage_metadata}""")
+    logger.warning("sending response back")
     return response
 
 @retry(wait=wait_random_exponential(multiplier=1, max=60))

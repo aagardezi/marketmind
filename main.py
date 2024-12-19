@@ -587,6 +587,7 @@ def handle_gemini20():
 
             logger.warning("Gemini called, This is the start")
             logger.warning(response)
+            logger.warning(f"""Tokens in use: {response.usage_metadata}""")
             logger.warning("The start is done")
 
             logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
@@ -666,6 +667,7 @@ def handle_gemini15():
             safety_settings=safety_settings)
             logger.warning("This is the start")
             logger.warning(response)
+            logger.warning(f"""Tokens in use: {response.usage_metadata}""")
             logger.warning("The start is done")
 
             logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")

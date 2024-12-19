@@ -444,7 +444,7 @@ BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = helpercode.get_project_id()
 LOCATION = "us-central1"
 
-sql_query_tool = Tool(
+market_query_tool = Tool(
     function_declarations=[
         geminifunctionsbq.sql_query_func,
         geminifunctionsbq.list_datasets_func,
@@ -462,7 +462,7 @@ sql_query_tool = Tool(
     ],
 )
 
-sql_query20_tool = types.Tool(
+market_query20_tool = types.Tool(
     function_declarations=[
         # geminifunctionsbq.sql_query_func,
         # geminifunctionsbq.list_datasets_func,
@@ -478,8 +478,8 @@ sql_query20_tool = types.Tool(
         gemini20functionfinhub.financials_reported,
         gemini20functionfinhub.sec_filings,
         gemini20functiongeneral.current_date,
-        gemini20functionalphavantage.monthly_stock_price,
-        gemini20functionalphavantage.market_sentiment,
+        # gemini20functionalphavantage.monthly_stock_price,
+        # gemini20functionalphavantage.market_sentiment,
     ],
 )
 
@@ -504,7 +504,9 @@ SYSTEM_INSTRUCTION = """You are a financial analyst that understands financial d
                             Once you have the current date, use it to determine the start and end date for the year.
                             Use those as the start and end dates in fuction calls where the user has not supplied a date range.
                             When identifing a symbol for a company from a list of symbols make sure its a primary symbol.
-                            Usually primary symbols dont have a dot . in the name
+                            Usually primary symbols dont have a dot . in the name"""
+
+TEMP_SYSTEM_INSTRUCTION = """
                             When creating the report also inlcude a seciton on market sentiment (accessed via a tool) and 
                             use the monthly stock prices (obtained via a tool) and review it as part of the analysis"""
 
@@ -541,7 +543,7 @@ generate_config_20 = types.GenerateContentConfig(
       threshold="OFF"
     )],
     system_instruction=[types.Part.from_text(SYSTEM_INSTRUCTION)],
-    tools= [sql_query20_tool],
+    tools= [market_query20_tool],
 )
 
 safety_settings = [
@@ -691,7 +693,7 @@ def handle_gemini15():
         # "gemini-1.5-pro-002",
         st.session_state.modelname,
         system_instruction=[SYSTEM_INSTRUCTION],
-        tools=[sql_query_tool],
+        tools=[market_query_tool],
     )
 
 

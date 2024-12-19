@@ -86,7 +86,7 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
 
         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
-    logger.warning("Making gemin call for api response")
+    logger.warning("Making gemini call for api response")
 
     # response = st.session_state.chat.send_message(
     #             parts
@@ -125,7 +125,7 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
             logger.warning("Function Response complete")
 
             logger.warning(api_response)
-            logger.warning("Making gemin call for api response")
+            logger.warning("Making gemini call for api response")
             
             part = Part.from_function_response(
                             name=function_name,
@@ -200,7 +200,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
 
         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
 
-    logger.warning("Making gemin call for api response")
+    logger.warning("Making gemini call for api response")
 
     functioncontent.append(function_parts)
     functioncontent.append(parts)
@@ -249,7 +249,7 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
             stringoutputcount = stringoutputcount + len(str(api_response))
             logger.warning(f"""String output count is {stringoutputcount}""")
             logger.warning(api_response)
-            logger.warning("Making gemin call for api response")
+            logger.warning("Making gemini call for api response")
             
             part = types.Part.from_function_response(
                             name=function_name,

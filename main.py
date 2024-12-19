@@ -797,7 +797,10 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         
         logger.warning(f"""Session count is {st.session_state.sessioncount}""")
 
-        st.text(f"""Currently only available for US Securities {st.session_state.sessioncount}""")
+        with st.sidebar:
+            st.text(f"""#: {st.session_state.sessioncount}""")
+
+        # st.text(f"""Currently only available for US Securities {st.session_state.sessioncount}""")
         
         if "messages" not in st.session_state:
             st.session_state.messages = []

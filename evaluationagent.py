@@ -57,7 +57,7 @@ evalagent_20_tool = types.Tool(
         # geminifunctionsbq.list_tables_func,
         # geminifunctionsbq.get_table_func,
         # geminifunctionsbq.sql_query_func,
-        gemini20functionfinhub.symbol_lookup,
+        # gemini20functionfinhub.symbol_lookup,
         # gemini20functionfinhub.company_news,
         # gemini20functionfinhub.company_profile,
         # gemini20functionfinhub.company_basic_financials,

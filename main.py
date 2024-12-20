@@ -26,6 +26,8 @@ import helperalphavantage
 import helpercode
 import helperstreamlit
 
+import evaluationagent
+
 
 
 
@@ -679,6 +681,9 @@ def handle_gemini20():
             st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
             functioncontent = []
             functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
+
+            evaluationagent.evaluation_agent(prompt)
+
             logger.warning("Conversation history start")
             logger.warning(st.session_state.aicontent)
             logger.warning("Conversation history end")
@@ -801,8 +806,6 @@ def handle_gemini15():
                     "md5has" : helpercode.get_md5_hash(full_response)
                 }
             )
-
-
 
 
 

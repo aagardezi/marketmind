@@ -303,7 +303,6 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
     return response,backend_details, functioncontent
 
 
-
 def handle_external_function(api_requests_and_responses, params, function_name):
     """This function handesl the call to the external function once Gemini has determined a function call is required"""
     if function_name in helpercode.function_handler.keys():
@@ -617,7 +616,6 @@ safety_settings = [
 ]
 
 
-
 def handle_api_response(message_placeholder, api_requests_and_responses, backend_details):
     backend_details += "- Function call:\n"
     backend_details += (
@@ -642,7 +640,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
         st.markdown(backend_details)
     return backend_details
 
-def handle_gemini20():
+def handle_gemini20(prompt):
     logger.warning("Starting Gemini 2.0")
     global stringoutputcount
 
@@ -660,87 +658,80 @@ def handle_gemini20():
     
     stringoutputcount = 0
 
-    if prompt := st.chat_input("What is up?"):
+    # if prompt := st.chat_input("What is up?"):
 
-        # # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-
-        # Add user message to chat history
-        logger.warning(f"""Model is: {st.session_state.modelname}, Prompt is: {prompt}""")
-  
-
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = ""
+    #     # # Display user message in chat message container
+    #     with st.chat_message("user"):
+    #         st.markdown(prompt)
 
 
-            logger.warning("Configuring prompt")
-            st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
-            functioncontent = []
-            functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
-
-            evaluationagent.evaluation_agent(prompt)
-
-            logger.warning("Conversation history start")
-            logger.warning(st.session_state.aicontent)
-            logger.warning("Conversation history end")
-            logger.warning("Prompt configured, calling Gemini...")
-            response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
-                                                              contents=st.session_state.aicontent,
-                                                              config=generate_config_20)
-
-            logger.warning("Gemini called, This is the start")
-            logger.warning(response)
-            logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-            logger.warning("The start is done")
-
-            logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-
-            api_requests_and_responses = []
-            backend_details = ""
-            #testing
-            st.session_state.aicontent.append(response.candidates[0].content)
-            #testing
-            if len(response.candidates[0].content.parts) >1:
-                response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
+    # Add user message to chat history
+    logger.warning(f"""Model is: {st.session_state.modelname}, Prompt is: {prompt}""")
 
 
-            else:
-                response, backend_details, functioncontent = handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
-
-            time.sleep(3)
-            
-            full_response = response.text
-            # st.session_state.aicontent.append(types.Content(role='model', parts=[types.Part(text=full_response)]))
-            with message_placeholder.container():
-                st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                with st.expander("Function calls, parameters, and responses:"):
-                    st.markdown(backend_details)
-
-            st.session_state.messages.append(
-                {
-                    "role": "assistant",
-                    "content": full_response,
-                    "backend_details": backend_details,
-                    "md5has" : helpercode.get_md5_hash(full_response)
-                }
-            )
-            logger.warning(f"""Total string output count is {stringoutputcount}""")
-            logger.warning(st.session_state.aicontent)
-            logger.warning("This is the end of Gemini 2.0")
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
 
 
+        logger.warning("Configuring prompt")
+        st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
+        functioncontent = []
+        functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
+
+        evaluationagent.evaluation_agent(prompt)
+
+        logger.warning("Conversation history start")
+        logger.warning(st.session_state.aicontent)
+        logger.warning("Conversation history end")
+        logger.warning("Prompt configured, calling Gemini...")
+        response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
+                                                            contents=st.session_state.aicontent,
+                                                            config=generate_config_20)
+
+        logger.warning("Gemini called, This is the start")
+        logger.warning(response)
+        logger.warning(f"""Tokens in use: {response.usage_metadata}""")
+        logger.warning("The start is done")
+
+        logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
+
+        api_requests_and_responses = []
+        backend_details = ""
+        #testing
+        st.session_state.aicontent.append(response.candidates[0].content)
+        #testing
+        if len(response.candidates[0].content.parts) >1:
+            response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
 
 
+        else:
+            response, backend_details, functioncontent = handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
+
+        time.sleep(3)
+        
+        full_response = response.text
+        # st.session_state.aicontent.append(types.Content(role='model', parts=[types.Part(text=full_response)]))
+        with message_placeholder.container():
+            st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+            with st.expander("Function calls, parameters, and responses:"):
+                st.markdown(backend_details)
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": full_response,
+                "backend_details": backend_details,
+                "md5has" : helpercode.get_md5_hash(full_response)
+            }
+        )
+        logger.warning(f"""Total string output count is {stringoutputcount}""")
+        logger.warning(st.session_state.aicontent)
+        logger.warning("This is the end of Gemini 2.0")
 
 
-
-
-
-def handle_gemini15():
+def handle_gemini15(prompt):
     logger.warning("Starting Gemini 1.5")
     vertexai.init(project=PROJECT_ID, location=LOCATION)
     model = GenerativeModel(
@@ -757,55 +748,55 @@ def handle_gemini15():
     if "chat" not in st.session_state:
         st.session_state.chat = model.start_chat()
 
-    if prompt := st.chat_input("What is up?"):
+    # if prompt := st.chat_input("What is up?"):
 
-        # # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-
-        # Add user message to chat history
-
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = ""
-            
-            response = st.session_state.chat.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
-            safety_settings=safety_settings)
-            logger.warning("This is the start")
-            logger.warning(response)
-            logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-            logger.warning("The start is done")
-
-            logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-
-            api_requests_and_responses = []
-            backend_details = ""
-            api_response = ""
-            if len(response.candidates[0].content.parts) >1:
-                response, backend_details = handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+    #     # # Display user message in chat message container
+    #     with st.chat_message("user"):
+    #         st.markdown(prompt)
 
 
-            else:
-                response, backend_details = handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+    # Add user message to chat history
 
-            time.sleep(3)
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        
+        response = st.session_state.chat.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
+        safety_settings=safety_settings)
+        logger.warning("This is the start")
+        logger.warning(response)
+        logger.warning(f"""Tokens in use: {response.usage_metadata}""")
+        logger.warning("The start is done")
 
-            full_response = response.text
-            with message_placeholder.container():
-                st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-                with st.expander("Function calls, parameters, and responses:"):
-                    st.markdown(backend_details)
+        logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
 
-            st.session_state.messages.append(
-                {
-                    "role": "assistant",
-                    "content": full_response,
-                    "backend_details": backend_details,
-                    "md5has" : helpercode.get_md5_hash(full_response)
-                }
-            )
+        api_requests_and_responses = []
+        backend_details = ""
+        api_response = ""
+        if len(response.candidates[0].content.parts) >1:
+            response, backend_details = handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+
+
+        else:
+            response, backend_details = handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+
+        time.sleep(3)
+
+        full_response = response.text
+        with message_placeholder.container():
+            st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
+            with st.expander("Function calls, parameters, and responses:"):
+                st.markdown(backend_details)
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": full_response,
+                "backend_details": backend_details,
+                "md5has" : helpercode.get_md5_hash(full_response)
+            }
+        )
 
 
 
@@ -909,10 +900,14 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")
         try:
-            if st.session_state.modelname.startswith("gemini-1.5"):
-                handle_gemini15()
-            else:
-                handle_gemini20()
+            if prompt := st.chat_input("What is up?"):
+                # # Display user message in chat message container
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+                if st.session_state.modelname.startswith("gemini-1.5"):
+                    handle_gemini15(prompt)
+                else:
+                    handle_gemini20(prompt)
         except Exception as e:
             with st.chat_message("error",avatar=":material/chat_error:"):
                 message_placeholder = st.empty()

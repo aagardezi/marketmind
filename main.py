@@ -79,8 +79,8 @@ def handel_gemini15_parallel_func(handle_api_response, response, message_placeho
                 
         logger.warning("Prams processing done")
         logger.warning(response)
-        logger.warning(response.function_call.name)
-        logger.warning(params)
+        logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
+        # logger.warning(params)
 
         function_name = response.function_call.name
 
@@ -125,8 +125,8 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
                     
             logger.warning("Prams processing done")
             logger.warning(response)
-            logger.warning(response.function_call.name)
-            logger.warning(params)
+            logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
+            # logger.warning(params)
 
             function_name = response.function_call.name
 
@@ -188,8 +188,8 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
                 
         logger.warning("Prams processing done")
         logger.warning(response)
-        logger.warning(response.function_call.name)
-        logger.warning(params)
+        logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
+        # logger.warning(params)
 
         function_name = response.function_call.name
 
@@ -248,8 +248,8 @@ def handle_gemini20_serial_func(handle_api_response, response, message_placehold
                     
             logger.warning("Prams processing done")
             logger.warning(response)
-            logger.warning(response.function_call.name)
-            logger.warning(params)
+            logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
+            # logger.warning(params)
 
             function_name = response.function_call.name
 

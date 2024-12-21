@@ -10,10 +10,6 @@ from google.cloud import bigquery
 
 import logging
 
-
-
-import gemini20functionfinhub
-
 import gemini20functionevalagent
 
 

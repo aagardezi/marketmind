@@ -4,6 +4,7 @@ import os
 import streamlit as st
 from streamlit_float import *
 from streamlit_google_auth import Authenticate
+from streamlit_pills import pills
 import vertexai
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Tool, Part, FinishReason, SafetySetting
 from google import genai
@@ -32,9 +33,7 @@ import evaluationagent
 
 
 
-st.set_page_config(layout="wide")
-# st.set_page_config()
-float_init(theme=True, include_unstable_primary=False)
+
 
 #logging initialised
 helpercode.init_logging()
@@ -825,16 +824,16 @@ def authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION):
     logger.warning(f"""Auth as string is set to {os.getenv('USEAUTH')}""")
 
     authenticator = Authenticate(
-    secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
-    cookie_name='logincookie',
-    cookie_key='this_is_secret',
-    redirect_uri='https://marketmind-884152252139.us-central1.run.app/',
-)
+        secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
+        cookie_name='logincookie',
+        cookie_key='this_is_secret',
+        redirect_uri='https://marketmind-884152252139.us-central1.run.app/',
+    )
 
-# if not st.session_state.get('connected', False):
-#     authorization_url = authenticator.get_authorization_url()
-#     st.markdown(f'[Login]({authorization_url})')
-#     st.link_button('Login', authorization_url)
+    # if not st.session_state.get('connected', False):
+    #     authorization_url = authenticator.get_authorization_url()
+    #     st.markdown(f'[Login]({authorization_url})')
+    #     st.link_button('Login', authorization_url)
 
     logger.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 
@@ -857,7 +856,21 @@ def authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION):
     return authenticator
 
 
+def get_chat_history():
+    messages = []
+    messageicon = []
+    for message in st.session_state.messages:
+        if message["role"] in ["user"]:
+            messages.append(message['content'][:7])
+            messageicon.append('➕')
+    with st.sidebar:
+        st.write(pills("Chat History", messages, messageicon))
 
+
+
+st.set_page_config(layout="wide")
+# st.set_page_config()
+float_init(theme=True, include_unstable_primary=False)
 
 authenticator = authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION)
 
@@ -870,7 +883,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.image(st.session_state['user_info'].get('picture'))
             if st.button('Log out'):
                 authenticator.logout()
-        st.text("MarketMind")
+        st.header("MarketMind")
+        st.header("Debug")
         if st.button("Reload"):
             pass
         if st.button("System Instruction"):
@@ -889,7 +903,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         else:
             st.title(f"""MarketMind: built using {st.session_state.modelname}""")
         
-        st.text("Currently only available for US Securities")
+        st.caption("Currently only available for US Securities")
 
         if "sessioncount" not in st.session_state:
             st.session_state.sessioncount = 0

@@ -60,7 +60,7 @@ def select_model():
 @st.dialog("View System Instructions", width="large")
 def view_systeminstruction():
     logger.warning("Viewing System Instruction")
-    st.markdown(SYSTEM_INSTRUCTION)
+    st.markdown(SYSTEM_INSTRUCTION.replace('\t', ''))
 
 
 
@@ -834,9 +834,6 @@ logger.warning(f"""Client info is {clientinfo}""")
 
 authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))
 
-if "queryrunning" not in st.session_state:
-    st.session_state.queryrunning = False
-
 
 logger.warning(f"""final auth status is {authstatus}""")
 
@@ -857,11 +854,10 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             if st.button('Log out'):
                 authenticator.logout()
         st.text("MarketMind")
-        if not st.session_state.queryrunning:
-            if st.button("Reload"):
-                pass
-            if st.button("System Instruction"):
-                view_systeminstruction()
+        if st.button("Reload"):
+            pass
+        if st.button("System Instruction"):
+            view_systeminstruction()
 
     if "modelname" not in st.session_state:
         logger.warning("model name session state not initialised")
@@ -913,14 +909,11 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")
         try:
-            st.session_state.queryrunning = True
             if st.session_state.modelname.startswith("gemini-1.5"):
                 handle_gemini15()
             else:
                 handle_gemini20()
-            st.session_state.queryrunning = False
         except Exception as e:
-            st.session_state.queryrunning = False
             with st.chat_message("error",avatar=":material/chat_error:"):
                 message_placeholder = st.empty()
                 with message_placeholder.container():

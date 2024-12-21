@@ -863,8 +863,9 @@ def get_chat_history():
         if message["role"] in ["user"]:
             messages.append(message['content'][:7])
             messageicon.append('➕')
-    with st.sidebar:
-        st.write(pills("Chat History", messages, messageicon))
+    if len(messages) > 0:
+        with st.sidebar:
+            st.write(pills("Chat History", messages, messageicon))
 
 
 

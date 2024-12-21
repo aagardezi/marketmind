@@ -57,7 +57,7 @@ def select_model():
         st.session_state.modelname = modelname
         st.rerun()
 
-@st.dialog("View System Instructions")
+@st.dialog("View System Instructions", width="large")
 def view_systeminstruction():
     logger.warning("Viewing System Instruction")
     st.markdown(SYSTEM_INSTRUCTION)

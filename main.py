@@ -445,11 +445,29 @@ def handle_gemini20_chat_single(functioncontent):
     logger.warning("sending response back")
     return response
 
+def display_restore_messages(logger):
+    logger.warning("Checking if messages to restore")
+    md5cache = []
+    for message in st.session_state.messages:
+        logger.warning("Restoring messages")
+        if message["role"] in ["assistant"]:
+            if(message["md5has"] not in md5cache):
+                md5cache.append(message["md5has"])
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+            else:
+                logger.warning("Message already restored, ignoring")
+        else:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
+    logger.warning("Messages restored")
 
 BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = helpercode.get_project_id()
 LOCATION = "us-central1"
+USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
+
 
 market_query_tool = Tool(
     function_declarations=[
@@ -800,12 +818,13 @@ def handle_gemini15(prompt):
 
 
 
-USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
 
-logger.warning(f"""Auth as bool is set to {USE_AUTHENTICATION}""")
-logger.warning(f"""Auth as string is set to {os.getenv('USEAUTH')}""")
 
-authenticator = Authenticate(
+def authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION):
+    logger.warning(f"""Auth as bool is set to {USE_AUTHENTICATION}""")
+    logger.warning(f"""Auth as string is set to {os.getenv('USEAUTH')}""")
+
+    authenticator = Authenticate(
     secret_credentials_path=helpercode.create_temp_credentials_file(helpercode.access_secret_version(PROJECT_ID, "AssetMPlatformKey")),
     cookie_name='logincookie',
     cookie_key='this_is_secret',
@@ -817,24 +836,31 @@ authenticator = Authenticate(
 #     st.markdown(f'[Login]({authorization_url})')
 #     st.link_button('Login', authorization_url)
 
-logger.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
+    logger.warning(f"""Connected status is {st.session_state['connected']} and use auth is {USE_AUTHENTICATION}""")
 
-clientinfo = helperstreamlit.get_remote_ip()
-logger.warning(f"""Client info is {clientinfo}""")
-
-
-authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))
+    clientinfo = helperstreamlit.get_remote_ip()
+    logger.warning(f"""Client info is {clientinfo}""")
 
 
-logger.warning(f"""final auth status is {authstatus}""")
+    authstatus = ((not st.session_state['connected']) and ( USE_AUTHENTICATION))
 
-if authstatus:
-    logger.warning("Auth Starting")
-    time.sleep(5)
-    authenticator.check_authentification()
-    st.logo("images/mmlogo1.png")
+
+    logger.warning(f"""final auth status is {authstatus}""")
+
+    if authstatus:
+        logger.warning("Auth Starting")
+        time.sleep(5)
+        authenticator.check_authentification()
+        st.logo("images/mmlogo1.png")
     # Create the login button
-    authenticator.login()
+        authenticator.login()
+    return authenticator
+
+
+
+
+authenticator = authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION)
+
 
 if st.session_state['connected'] or not USE_AUTHENTICATION:
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
@@ -880,22 +906,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
-        logger.warning("Checking if messages to restore")
-        md5cache = []
-        for message in st.session_state.messages:
-            logger.warning("Restoring messages")
-            if message["role"] in ["assistant"]:
-                if(message["md5has"] not in md5cache):
-                    md5cache.append(message["md5has"])
-                    with st.chat_message(message["role"]):
-                        st.markdown(message["content"])
-                else:
-                    logger.warning("Message already restored, ignoring")
-            else:
-                with st.chat_message(message["role"]):
-                    st.markdown(message["content"])
-
-        logger.warning("Messages restored")
+        display_restore_messages(logger)
         
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")

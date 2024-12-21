@@ -921,6 +921,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.session_state.messages = []
 
         display_restore_messages(logger)
+
+        get_chat_history()
         
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")

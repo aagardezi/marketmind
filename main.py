@@ -865,7 +865,7 @@ def get_chat_history():
             messageicon.append('➕')
     if len(messages) > 0:
         with st.sidebar:
-            st.write(pills("Chat History", messages, messageicon))
+            pills("Chat History", messages, messageicon)
 
 
 
@@ -877,6 +877,9 @@ authenticator = authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION)
 
 
 if st.session_state['connected'] or not USE_AUTHENTICATION:
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     with st.sidebar:
         st.logo("images/mmlogo1.png")
@@ -885,6 +888,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             if st.button('Log out'):
                 authenticator.logout()
         st.header("MarketMind")
+        get_chat_history()
         st.header("Debug")
         if st.button("Reload"):
             pass
@@ -917,13 +921,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.text(f"""#: {st.session_state.sessioncount}""")
 
         # st.text(f"""Currently only available for US Securities {st.session_state.sessioncount}""")
-        
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
 
         display_restore_messages(logger)
-
-        get_chat_history()
         
         if "client" not in st.session_state:
             st.session_state.client = bigquery.Client(project="genaillentsearch")

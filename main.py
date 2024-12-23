@@ -667,11 +667,11 @@ def handle_gemini20(prompt):
         location=LOCATION
     )
 
-    if "chat" not in st.session_state:
-        st.session_state.chat = client
+    # if "chat" not in st.session_state:
+    #     st.session_state.chat = client
     
-    if "aicontent" not in st.session_state:
-        st.session_state.aicontent = []
+    # if "aicontent" not in st.session_state:
+    #     st.session_state.aicontent = []
     
     stringoutputcount = 0
 
@@ -751,19 +751,19 @@ def handle_gemini20(prompt):
 def handle_gemini15(prompt):
     logger.warning("Starting Gemini 1.5")
     vertexai.init(project=PROJECT_ID, location=LOCATION)
-    model = GenerativeModel(
-        # "gemini-1.5-pro-002",
-        st.session_state.modelname,
-        system_instruction=[SYSTEM_INSTRUCTION],
-        tools=[market_query_tool],
-    )
+    # model = GenerativeModel(
+    #     # "gemini-1.5-pro-002",
+    #     st.session_state.modelname,
+    #     system_instruction=[SYSTEM_INSTRUCTION],
+    #     tools=[market_query_tool],
+    # )
 
 
     response=None
 
 
-    if "chat" not in st.session_state:
-        st.session_state.chat = model.start_chat()
+    # if "chat15" not in st.session_state:
+    #     st.session_state.chat15 = model.start_chat()
 
     # if prompt := st.chat_input("What is up?"):
 
@@ -779,7 +779,7 @@ def handle_gemini15(prompt):
         message_placeholder = st.empty()
         full_response = ""
         
-        response = st.session_state.chat.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
+        response = st.session_state.chat15.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
         safety_settings=safety_settings)
         logger.warning("This is the start")
         logger.warning(response)
@@ -867,6 +867,13 @@ def get_chat_history():
         with st.sidebar:
             pills("Chat History", messages, messageicon)
 
+def init_chat_session(client, model):
+    st.session_state.messages = []
+    st.session_state.sessioncount = 0
+    st.session_state.client = bigquery.Client(project="genaillentsearch")
+    st.session_state.chat = client
+    st.session_state.aicontent = []
+    st.session_state.chat15 = model.start_chat()
 
 
 st.set_page_config(layout="wide")
@@ -878,8 +885,28 @@ authenticator = authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION)
 
 if st.session_state['connected'] or not USE_AUTHENTICATION:
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    if "chatstarted" not in st.session_state:
+        #Gemini 2 client
+        client = genai.Client(
+            vertexai=True,
+            project=PROJECT_ID,
+            location=LOCATION
+        )
+
+        #Gemini1.5 Client
+        model = GenerativeModel(
+            # "gemini-1.5-pro-002",
+            st.session_state.modelname,
+            system_instruction=[SYSTEM_INSTRUCTION],
+            tools=[market_query_tool],
+        )
+        st.session_state.gemini15 = model
+        st.session_state.gemini20 = client
+        init_chat_session(client, model)
+        st.session_state.chatstarted = True
+
+    # if "messages" not in st.session_state:
+    #     st.session_state.messages = []
     # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
     with st.sidebar:
         st.logo("images/mmlogo1.png")
@@ -890,6 +917,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         st.header("MarketMind")
         get_chat_history()
         st.header("Debug")
+        if st.button("Start new Chat"):
+            init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
         if st.button("Reload"):
             pass
         if st.button("System Instruction"):
@@ -910,10 +939,10 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         
         st.caption("Currently only available for US Securities")
 
-        if "sessioncount" not in st.session_state:
-            st.session_state.sessioncount = 0
-        else:
-            st.session_state.sessioncount = st.session_state.sessioncount +1
+        # if "sessioncount" not in st.session_state:
+        #     st.session_state.sessioncount = 0
+        # else:
+        st.session_state.sessioncount = st.session_state.sessioncount +1
         
         logger.warning(f"""Session count is {st.session_state.sessioncount}""")
 
@@ -924,8 +953,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
 
         display_restore_messages(logger)
         
-        if "client" not in st.session_state:
-            st.session_state.client = bigquery.Client(project="genaillentsearch")
+        # if "client" not in st.session_state:
+        #     st.session_state.client = bigquery.Client(project="genaillentsearch")
         try:
             if prompt := st.chat_input("What is up?"):
                 # # Display user message in chat message container

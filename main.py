@@ -885,51 +885,58 @@ authenticator = authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION)
 
 if st.session_state['connected'] or not USE_AUTHENTICATION:
 
-    if "chatstarted" not in st.session_state:
-        #Gemini 2 client
-        client = genai.Client(
-            vertexai=True,
-            project=PROJECT_ID,
-            location=LOCATION
-        )
-
-        #Gemini1.5 Client
-        model = GenerativeModel(
-            # "gemini-1.5-pro-002",
-            st.session_state.modelname,
-            system_instruction=[SYSTEM_INSTRUCTION],
-            tools=[market_query_tool],
-        )
-        st.session_state.gemini15 = model
-        st.session_state.gemini20 = client
-        init_chat_session(client, model)
-        st.session_state.chatstarted = True
-
-    # if "messages" not in st.session_state:
-    #     st.session_state.messages = []
-    # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
-    with st.sidebar:
-        st.logo("images/mmlogo1.png")
-        if USE_AUTHENTICATION:
-            st.image(st.session_state['user_info'].get('picture'))
-            if st.button('Log out'):
-                authenticator.logout()
-        st.header("MarketMind")
-        get_chat_history()
-        st.header("Debug")
-        if st.button("Start new Chat"):
-            init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
-        if st.button("Reload"):
-            pass
-        if st.button("System Instruction"):
-            view_systeminstruction()
-
     if "modelname" not in st.session_state:
         logger.warning("model name session state not initialised")
         # st.session_state.modelname = "gemini-1.5-pro-002"
         select_model()
         # logger.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:
+
+        if "chatstarted" not in st.session_state:
+            #Gemini 2 client
+            client = genai.Client(
+                vertexai=True,
+                project=PROJECT_ID,
+                location=LOCATION
+            )
+
+            #Gemini1.5 Client
+            model = GenerativeModel(
+                # "gemini-1.5-pro-002",
+                st.session_state.modelname,
+                system_instruction=[SYSTEM_INSTRUCTION],
+                tools=[market_query_tool],
+            )
+            st.session_state.gemini15 = model
+            st.session_state.gemini20 = client
+            init_chat_session(client, model)
+            st.session_state.chatstarted = True
+
+        # if "messages" not in st.session_state:
+        #     st.session_state.messages = []
+        # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
+        with st.sidebar:
+            st.logo("images/mmlogo1.png")
+            if USE_AUTHENTICATION:
+                st.image(st.session_state['user_info'].get('picture'))
+                if st.button('Log out'):
+                    authenticator.logout()
+            st.header("MarketMind")
+            get_chat_history()
+            st.header("Debug")
+            if st.button("Start new Chat"):
+                init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
+            if st.button("Reload"):
+                pass
+            if st.button("System Instruction"):
+                view_systeminstruction()
+
+        # if "modelname" not in st.session_state:
+        #     logger.warning("model name session state not initialised")
+        #     # st.session_state.modelname = "gemini-1.5-pro-002"
+        #     select_model()
+        #     # logger.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
+        # else:
         logger.warning(f"""model name session state initialised and it is: {st.session_state.modelname}""")
         st.image("images/mmlogo1.png")
         if USE_AUTHENTICATION:

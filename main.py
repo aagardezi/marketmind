@@ -337,7 +337,7 @@ def handle_external_function(api_requests_and_responses, params, function_name):
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini15_chat(parts):
     logger.warning("Making actual multi gemini call")
-    response = st.session_state.chat.send_message(
+    response = st.session_state.chat15.send_message(
                 parts
     )
     logger.warning("Multi call succeeded")
@@ -360,7 +360,7 @@ def handle_gemini15_chat(parts):
 @retry(wait=wait_random_exponential(multiplier=1, max=60))
 def handle_gemini15_chat_single(part):
     logger.warning("Making actual single gemini call")
-    response = st.session_state.chat.send_message(
+    response = st.session_state.chat15.send_message(
                 part
     )
     logger.warning("Single call succeeded")
@@ -875,13 +875,32 @@ def init_chat_session(client, model):
     st.session_state.aicontent = []
     st.session_state.chat15 = model.start_chat()
 
+def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat_history, init_chat_session, authenticator):
+    with st.sidebar:
+        st.logo("images/mmlogo1.png")
+        if USE_AUTHENTICATION:
+            st.image(st.session_state['user_info'].get('picture'))
+            if st.button('Log out'):
+                authenticator.logout()
+        st.header("MarketMind")
+        get_chat_history()
+        st.header("Debug")
+        if st.button("Start new Chat"):
+            init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
+        if st.button("Reload"):
+            pass
+        if st.button("System Instruction"):
+            view_systeminstruction()
+            
+        st.session_state.sessioncount = st.session_state.sessioncount +1
+        logger.warning(f"""Session count is {st.session_state.sessioncount}""")
+        st.text(f"""#: {st.session_state.sessioncount}""")
 
 st.set_page_config(layout="wide")
 # st.set_page_config()
 float_init(theme=True, include_unstable_primary=False)
 
 authenticator = authenticate_user(logger, PROJECT_ID, USE_AUTHENTICATION)
-
 
 if st.session_state['connected'] or not USE_AUTHENTICATION:
 
@@ -891,7 +910,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         select_model()
         # logger.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
     else:
-
+        logger.warning(f"""model name session state initialised and it is: {st.session_state.modelname}""")
         if "chatstarted" not in st.session_state:
             #Gemini 2 client
             client = genai.Client(
@@ -915,21 +934,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         # if "messages" not in st.session_state:
         #     st.session_state.messages = []
         # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
-        with st.sidebar:
-            st.logo("images/mmlogo1.png")
-            if USE_AUTHENTICATION:
-                st.image(st.session_state['user_info'].get('picture'))
-                if st.button('Log out'):
-                    authenticator.logout()
-            st.header("MarketMind")
-            get_chat_history()
-            st.header("Debug")
-            if st.button("Start new Chat"):
-                init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
-            if st.button("Reload"):
-                pass
-            if st.button("System Instruction"):
-                view_systeminstruction()
+        display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat_history, init_chat_session, authenticator)
 
         # if "modelname" not in st.session_state:
         #     logger.warning("model name session state not initialised")
@@ -937,7 +942,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         #     select_model()
         #     # logger.warning(f"""In initialiser function model name is {st.session_state.modelname}""")
         # else:
-        logger.warning(f"""model name session state initialised and it is: {st.session_state.modelname}""")
+        
         st.image("images/mmlogo1.png")
         if USE_AUTHENTICATION:
             st.title(f"""{st.session_state['user_info'].get('name')}! MarketMind: built using {st.session_state.modelname}""")
@@ -949,12 +954,12 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         # if "sessioncount" not in st.session_state:
         #     st.session_state.sessioncount = 0
         # else:
-        st.session_state.sessioncount = st.session_state.sessioncount +1
+        # st.session_state.sessioncount = st.session_state.sessioncount +1
         
-        logger.warning(f"""Session count is {st.session_state.sessioncount}""")
+        # logger.warning(f"""Session count is {st.session_state.sessioncount}""")
 
-        with st.sidebar:
-            st.text(f"""#: {st.session_state.sessioncount}""")
+        # with st.sidebar:
+        #     st.text(f"""#: {st.session_state.sessioncount}""")
 
         # st.text(f"""Currently only available for US Securities {st.session_state.sessioncount}""")
 

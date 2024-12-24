@@ -216,6 +216,17 @@ def handle_gemini20_chat_single(functioncontent, logger, generate_config_20):
     logger.warning("sending response back")
     return response
 
+@retry(wait=wait_random_exponential(multiplier=1, max=60))
+def handel_initial_gemini20_chat(generate_config_20, logger):
+    try:
+        response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
+                                                            contents=st.session_state.aicontent,
+                                                            config=generate_config_20)
+    except Exception as e:
+        logger.error(e)
+        raise e                                                    
+    return response
+
 def handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, generate_config_20, handle_api_response, handle_external_function):
     logger.warning("Starting Gemini 2.0")
     global stringoutputcount
@@ -262,9 +273,7 @@ def handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, ge
         logger.warning(st.session_state.aicontent)
         logger.warning("Conversation history end")
         logger.warning("Prompt configured, calling Gemini...")
-        response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
-                                                            contents=st.session_state.aicontent,
-                                                            config=generate_config_20)
+        response = handel_initial_gemini20_chat(generate_config_20, logger)
 
         logger.warning("Gemini called, This is the start")
         logger.warning(response)

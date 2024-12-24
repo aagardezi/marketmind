@@ -29,6 +29,7 @@ import helperstreamlit
 
 import evaluationagent
 import gemini20handler
+import gemini15handler
 
 
 
@@ -975,7 +976,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
                 with st.chat_message("user"):
                     st.markdown(prompt)
                 if st.session_state.modelname.startswith("gemini-1.5"):
-                    handle_gemini15(prompt)
+                    gemini15handler.handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
+                                                    generation_config, safety_settings, handle_api_response, handle_external_function)
                 else:
                     gemini20handler.handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
                                                     generate_config_20, handle_api_response, handle_external_function)

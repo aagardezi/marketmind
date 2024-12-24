@@ -112,7 +112,8 @@ def handle_gemini15_serial_func(handle_api_response, response, message_placehold
                                                                         response,
                                                                         message_placeholder,
                                                                         api_requests_and_responses,
-                                                                        backend_details)
+                                                                        backend_details,
+                                                                        logger, handle_external_function)
             else:
                 response = response.candidates[0].content.parts[0]
 
@@ -169,7 +170,7 @@ def handle_gemini15_chat_single(part, logger):
     return response
 
 
-def handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, generation_config, safety_settings, handle_api_response):
+def handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, generation_config, safety_settings, handle_api_response, handle_external_function):
     logger.warning("Starting Gemini 1.5")
     vertexai.init(project=PROJECT_ID, location=LOCATION)
     # model = GenerativeModel(
@@ -213,11 +214,11 @@ def handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, ge
         backend_details = ""
         api_response = ""
         if len(response.candidates[0].content.parts) >1:
-            response, backend_details = handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+            response, backend_details = handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, logger, handle_external_function)
 
 
         else:
-            response, backend_details = handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
+            response, backend_details = handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, logger, handle_external_function)
 
         time.sleep(3)
 

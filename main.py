@@ -67,7 +67,6 @@ def view_systeminstruction():
 def on_async_change():
     logger.warning("Async change detected")
     init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
-    st.rerun()
 
 # def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
 #     logger.warning("Starting parallal function resonse loop")
@@ -889,7 +888,7 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
             if st.button('Log out'):
                 authenticator.logout()
         st.header("MarketMind")
-        st.toggle("Async Agent",False, on_change=on_async_change)
+        st.toggle("Async Agent",False, on_change=on_async_change, key="asyncagent")
         get_chat_history()
         if st.button("Start new Chat"):
             init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
@@ -903,6 +902,10 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
         st.session_state.sessioncount = st.session_state.sessioncount +1
         logger.warning(f"""Session count is {st.session_state.sessioncount}""")
         st.text(f"""#: {st.session_state.sessioncount}""")
+        st.text(f"AsyncAgent: {st.session_state.asyncagent}")
+
+
+
 
 st.set_page_config(layout="wide")
 # st.set_page_config()

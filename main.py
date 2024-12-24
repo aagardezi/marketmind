@@ -28,6 +28,7 @@ import helpercode
 import helperstreamlit
 
 import evaluationagent
+import gemini20handler
 
 
 
@@ -661,11 +662,11 @@ def handle_gemini20(prompt):
     logger.warning("Starting Gemini 2.0")
     global stringoutputcount
 
-    client = genai.Client(
-        vertexai=True,
-        project=PROJECT_ID,
-        location=LOCATION
-    )
+    # client = genai.Client(
+    #     vertexai=True,
+    #     project=PROJECT_ID,
+    #     location=LOCATION
+    # )
 
     # if "chat" not in st.session_state:
     #     st.session_state.chat = client
@@ -976,7 +977,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
                 if st.session_state.modelname.startswith("gemini-1.5"):
                     handle_gemini15(prompt)
                 else:
-                    handle_gemini20(prompt)
+                    gemini20handler.handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
+                                                    generate_config_20, handle_api_response, handle_external_function)
         except Exception as e:
             with st.chat_message("error",avatar=":material/chat_error:"):
                 message_placeholder = st.empty()

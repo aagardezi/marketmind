@@ -861,7 +861,7 @@ def get_chat_history():
     messageicon = []
     for message in st.session_state.messages:
         if message["role"] in ["user"]:
-            messages.append(message['content'][:7])
+            messages.append(message['content'][:15])
             messageicon.append('➕')
     if len(messages) > 0:
         with st.sidebar:
@@ -887,6 +887,7 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
         st.header("Debug")
         if st.button("Start new Chat"):
             init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
+            st.rerun()
         if st.button("Reload"):
             pass
         if st.button("System Instruction"):

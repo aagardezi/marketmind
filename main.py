@@ -931,6 +931,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             )
 
             #Gemini1.5 Client
+            vertexai.init(project=PROJECT_ID, location=LOCATION)
             model = GenerativeModel(
                 # "gemini-1.5-pro-002",
                 st.session_state.modelname,

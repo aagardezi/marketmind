@@ -172,7 +172,7 @@ def handle_gemini15_chat_single(part, logger):
 
 def handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, generation_config, safety_settings, handle_api_response, handle_external_function):
     logger.warning("Starting Gemini 1.5")
-    vertexai.init(project=PROJECT_ID, location=LOCATION)
+    # vertexai.init(project=PROJECT_ID, location=LOCATION)
     # model = GenerativeModel(
     #     # "gemini-1.5-pro-002",
     #     st.session_state.modelname,

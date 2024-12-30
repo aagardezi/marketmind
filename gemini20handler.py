@@ -231,11 +231,11 @@ def handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, ge
     logger.warning("Starting Gemini 2.0")
     global stringoutputcount
 
-    client = genai.Client(
-        vertexai=True,
-        project=PROJECT_ID,
-        location=LOCATION
-    )
+    # client = genai.Client(
+    #     vertexai=True,
+    #     project=PROJECT_ID,
+    #     location=LOCATION
+    # )
 
     # if "chat" not in st.session_state:
     #     st.session_state.chat = client

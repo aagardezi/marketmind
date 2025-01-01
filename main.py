@@ -911,7 +911,7 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
         st.text(f"AsyncAgent: {st.session_state.asyncagent}")
 
 def send_async_gemini_message(prompt):
-    future = st.session_state.publiser.publish(st.session_state.topic_path,
+    future = st.session_state.publisher.publish(st.session_state.topic_path,
                                         prompt.encode("utf-8"),
                                         model = st.session_state.modelname.encode("utf-8"),
                                         session_id = st.session_state.session_id)

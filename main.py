@@ -74,6 +74,7 @@ def on_async_change():
     logger.warning("Async change detected")
     init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
     if st.session_state.asyncagent:
+        logger.warning("Setting up the publisher")
         st.session_state.publisher = pubsub_v1.PublisherClient()
         st.session_state.topic_path = st.session_state.publisher.topic_path(PROJECT_ID, TOPIC_ID)
 

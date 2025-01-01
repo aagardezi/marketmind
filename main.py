@@ -73,6 +73,7 @@ def view_systeminstruction():
 def on_async_change():
     logger.warning("Async change detected")
     init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
+    logger.warning(f"Async status: {st.session_state.asyncagent}")
     if st.session_state.asyncagent:
         logger.warning("Setting up the publisher")
         st.session_state.publisher = pubsub_v1.PublisherClient()

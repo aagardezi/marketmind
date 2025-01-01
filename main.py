@@ -31,9 +31,15 @@ import evaluationagent
 import gemini20handler
 import gemini15handler
 
+from google.cloud import pubsub_v1
 
 
 
+BIGQUERY_DATASET_ID = "lseg_data_normalised"
+PROJECT_ID = helpercode.get_project_id()
+LOCATION = "us-central1"
+USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
+TOPIC_ID = os.getenv('USEAUTH', "marketmind-async-topic")
 
 
 
@@ -67,6 +73,9 @@ def view_systeminstruction():
 def on_async_change():
     logger.warning("Async change detected")
     init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
+    if st.session_state.asyncagent:
+        st.session_state.publisher = pubsub_v1.PublisherClient()
+        st.session_state.topic_path = st.session_state.publisher.topic_path(PROJECT_ID, TOPIC_ID)
 
 # def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
 #     logger.warning("Starting parallal function resonse loop")
@@ -466,12 +475,6 @@ def display_restore_messages(logger):
                 st.markdown(message["content"])
 
     logger.warning("Messages restored")
-
-BIGQUERY_DATASET_ID = "lseg_data_normalised"
-PROJECT_ID = helpercode.get_project_id()
-LOCATION = "us-central1"
-USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
-
 
 market_query_tool = Tool(
     function_declarations=[
@@ -880,6 +883,7 @@ def init_chat_session(client, model):
     st.session_state.aicontent = []
     st.session_state.chat15 = model.start_chat()
 
+
 def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat_history, init_chat_session, authenticator):
     with st.sidebar:
         st.logo("images/mmlogo1.png")
@@ -904,7 +908,13 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
         st.text(f"""#: {st.session_state.sessioncount}""")
         st.text(f"AsyncAgent: {st.session_state.asyncagent}")
 
-
+def send_async_gemini_message(prompt):
+    future = st.session_state.publiser.publish(st.session_state.topic_path,
+                                        prompt.encode("utf-8"),
+                                        model = st.session_state.modelname.encode("utf-8"),
+                                        session_id = st.session_state.session_id)
+                
+    logger.warning(f"Published message, status: {future.result()}")
 
 
 st.set_page_config(layout="wide")
@@ -942,6 +952,9 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.session_state.gemini20 = client
             init_chat_session(client, model)
             st.session_state.chatstarted = True
+            if "session_id" not in st.session_state:
+                st.session_state.session_id = str(uuid.uuid4())
+            
 
         # if "messages" not in st.session_state:
         #     st.session_state.messages = []
@@ -984,12 +997,15 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
                 # # Display user message in chat message container
                 with st.chat_message("user"):
                     st.markdown(prompt)
-                if st.session_state.modelname.startswith("gemini-1.5"):
-                    gemini15handler.handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
-                                                    generation_config, safety_settings, handle_api_response, handle_external_function)
+                if st.session_state.asyncagent:
+                    send_async_gemini_message(prompt)
                 else:
-                    gemini20handler.handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
-                                                    generate_config_20, handle_api_response, handle_external_function)
+                    if st.session_state.modelname.startswith("gemini-1.5"):
+                        gemini15handler.handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
+                                                        generation_config, safety_settings, handle_api_response, handle_external_function)
+                    else:
+                        gemini20handler.handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 
+                                                        generate_config_20, handle_api_response, handle_external_function)
         except Exception as e:
             with st.chat_message("error",avatar=":material/chat_error:"):
                 message_placeholder = st.empty()

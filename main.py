@@ -999,6 +999,8 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
                     st.markdown(prompt)
                 if st.session_state.asyncagent:
                     send_async_gemini_message(prompt)
+                    with st.chat_message("assistant"):
+                        st.markdown("Message sent awaiting response...")
                 else:
                     if st.session_state.modelname.startswith("gemini-1.5"):
                         gemini15handler.handle_gemini15(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, 

@@ -76,6 +76,7 @@ def on_async_change():
     logger.warning(f"Async status: {st.session_state.asyncagent}")
     if st.session_state.asyncagent:
         logger.warning("Setting up the publisher")
+        logger.warning(f"Topic ID: {TOPIC_ID}")
         st.session_state.publisher = pubsub_v1.PublisherClient()
         st.session_state.topic_path = st.session_state.publisher.topic_path(PROJECT_ID, TOPIC_ID)
 
@@ -911,6 +912,7 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
         st.text(f"AsyncAgent: {st.session_state.asyncagent}")
 
 def send_async_gemini_message(prompt):
+    st.session_state.messages.append({"role": "user", "content": prompt})
     future = st.session_state.publisher.publish(st.session_state.topic_path,
                                         prompt.encode("utf-8"),
                                         model = st.session_state.modelname.encode("utf-8"),

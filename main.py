@@ -39,7 +39,7 @@ BIGQUERY_DATASET_ID = "lseg_data_normalised"
 PROJECT_ID = helpercode.get_project_id()
 LOCATION = "us-central1"
 USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
-TOPIC_ID = os.getenv('USEAUTH', "marketmind-async-topic")
+TOPIC_ID = os.getenv('TOPICID', "marketmind-async-topic")
 
 
 

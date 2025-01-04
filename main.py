@@ -12,6 +12,7 @@ from google.genai import types
 from google.cloud import bigquery
 
 import logging
+import json
 
 from tenacity import retry, wait_random_exponential
 
@@ -913,10 +914,13 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
 
 def send_async_gemini_message(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
     future = st.session_state.publisher.publish(st.session_state.topic_path,
-                                        prompt.encode("utf-8"),
+                                        json.dumps(st.session_state.aicontent).encode("utf-8"),
                                         model = st.session_state.modelname.encode("utf-8"),
-                                        session_id = st.session_state.session_id)
+                                        session_id = st.session_state.session_id,
+                                        prompt = prompt.encode("utf-8"))
+    st.session_state.aysncmessagesent = True
                 
     logger.warning(f"Published message, status: {future.result()}")
 
@@ -958,6 +962,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
             st.session_state.chatstarted = True
             if "session_id" not in st.session_state:
                 st.session_state.session_id = str(uuid.uuid4())
+                logging.warning(f"Session id created: {st.session_state.session_id}")
             
 
         # if "messages" not in st.session_state:
@@ -993,6 +998,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         # st.text(f"""Currently only available for US Securities {st.session_state.sessioncount}""")
 
         display_restore_messages(logger)
+        
         
         # if "client" not in st.session_state:
         #     st.session_state.client = bigquery.Client(project="genaillentsearch")

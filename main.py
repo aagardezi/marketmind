@@ -912,11 +912,32 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
         st.text(f"""#: {st.session_state.sessioncount}""")
         st.text(f"AsyncAgent: {st.session_state.asyncagent}")
 
+def serialise_message(aicontent):
+    returndata = []
+    logger.warning("priting aicontent")
+    logger.warning(aicontent)
+    logger.warning("priting aicontent done")
+    for item in aicontent:
+        returndata.append({
+            "role": item.role,
+            "content": item.parts[0].text
+        })
+    
+    testing_data = []
+    for item in returndata:
+        testing_data.append(types.Content(role=item["role"], parts=[types.Part(text=item["content"])]))
+    
+    logger.warning("priting testing_data")
+    logger.warning(testing_data)
+    logger.warning("priting testing_data done")
+
+    return json.dumps(returndata).encode("utf-8")   
+
 def send_async_gemini_message(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
     future = st.session_state.publisher.publish(st.session_state.topic_path,
-                                        json.dumps(st.session_state.aicontent).encode("utf-8"),
+                                        serialise_message(st.session_state.aicontent),
                                         model = st.session_state.modelname.encode("utf-8"),
                                         session_id = st.session_state.session_id,
                                         prompt = prompt.encode("utf-8"))

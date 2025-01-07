@@ -1005,7 +1005,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
         else:
             st.title(f"""MarketMind: built using {st.session_state.modelname}""")
         
-        st.caption("Currently only available for US Securities")
+        st.caption(f"Currently only available for US Securities -- {helpercode._get_session().id}")
 
         # if "sessioncount" not in st.session_state:
         #     st.session_state.sessioncount = 0
@@ -1030,7 +1030,7 @@ if st.session_state['connected'] or not USE_AUTHENTICATION:
                 with st.chat_message("user"):
                     st.markdown(prompt)
                 if st.session_state.asyncagent:
-                    send_async_gemini_message(prompt)
+                    send_async_gemini_message(prompt+PROMPT_ENHANCEMENT)
                     with st.chat_message("assistant"):
                         st.markdown("Message sent awaiting response...")
                 else:

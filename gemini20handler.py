@@ -267,7 +267,7 @@ def handle_gemini20(prompt, logger, PROJECT_ID, LOCATION, PROMPT_ENHANCEMENT, ge
         functioncontent = []
         functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
 
-        evaluationagent.evaluation_agent(prompt)
+        # evaluationagent.evaluation_agent(prompt)
 
         logger.warning("Conversation history start")
         logger.warning(st.session_state.aicontent)

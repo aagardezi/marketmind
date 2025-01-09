@@ -42,7 +42,20 @@ LOCATION = "us-central1"
 USE_AUTHENTICATION = os.getenv('USEAUTH', True)==True
 TOPIC_ID = os.getenv('TOPICID', "marketmind-async-topic")
 
+HELP = """You can use the this to create an analyst report for US stocks and companies.
+The Gemini based agent uses finhub.io to access their data API via tools and analyse the data to create the report.
+Once you generate the report you can chat with the data/responses or ask to create a new report. 
+The reports can also be compared and summarised. You can ask a full question or just the symbol for a company (GOOGL / META). 
+For example you can ask the following
+* Can you create an analyst report for the company ALPHABET INC-CL A that includes basic financials, company news for the year 2024 and
+company profile . Include the actual numbers as well. Include a summary of the analysis as well.
+* Can you create an analyst report for the company META
+* Can you compare the above analyst reprots and give me a sumary list pros and cons with a rating (Buy, Sell, Hold)
 
+or
+
+* GOOGL for the last 6 months
+* META for the last 6 months"""
 
 #logging initialised
 helpercode.init_logging()
@@ -70,6 +83,10 @@ def view_systeminstruction():
     logger.warning("Viewing System Instruction")
     st.markdown(SYSTEM_INSTRUCTION.replace('\t', ''))
 
+@st.dialog("View help", width="large")
+def view_help():
+    logger.warning("Viewing Help")
+    st.markdown(HELP)
 
 def on_async_change():
     logger.warning("Async change detected")
@@ -81,243 +98,6 @@ def on_async_change():
         st.session_state.publisher = pubsub_v1.PublisherClient()
         st.session_state.topic_path = st.session_state.publisher.topic_path(PROJECT_ID, TOPIC_ID)
 
-# def handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
-#     logger.warning("Starting parallal function resonse loop")
-#     parts=[]
-#     for response in response.candidates[0].content.parts:
-#         logger.warning("Function loop starting")
-#         logger.warning(response)
-#         params = {}
-#         try:
-#             for key, value in response.function_call.args.items():
-#                 params[key] = value
-#         except AttributeError:
-#             continue
-                
-#         logger.warning("Prams processing done")
-#         logger.warning(response)
-#         logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
-#         # logger.warning(params)
-
-#         function_name = response.function_call.name
-
-#         api_response = handle_external_function(api_requests_and_responses, params, function_name)
-
-#         logger.warning("Function Response complete")
-
-#         logger.warning(api_response)
-
-#         parts.append(Part.from_function_response(
-#                     name=function_name,
-#                     response={
-#                         "content": api_response,
-#                     },
-#                     ),
-#                 )
-
-#         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-
-#     logger.warning("Making gemini call for api response")
-
-#     response = handle_gemini15_chat(parts)
-
-            
-#     logger.warning("gemini api response completed")
-#     return response,backend_details
-
-
-# def handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details):
-#     response = response.candidates[0].content.parts[0]
-
-#     logger.warning(response)
-#     logger.warning("First Resonse done")
-
-#     function_calling_in_process = True
-#     while function_calling_in_process:
-#         try:
-#             logger.warning("Function loop starting")
-#             params = {}
-#             for key, value in response.function_call.args.items():
-#                 params[key] = value
-                    
-#             logger.warning("Prams processing done")
-#             logger.warning(response)
-#             logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
-#             # logger.warning(params)
-
-#             function_name = response.function_call.name
-
-#             api_response = handle_external_function(api_requests_and_responses, params, function_name)
-
-#             logger.warning("Function Response complete")
-
-#             logger.warning(api_response)
-#             logger.warning("Making gemini call for api response")
-            
-#             part = Part.from_function_response(
-#                             name=function_name,
-#                             response={
-#                                 "content": api_response,
-#                             },
-#             )
-#             response = handle_gemini15_chat_single(part)
-
-
-
-#             logger.warning("Function Response complete")
-
-
-#             backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-                    
-#             logger.warning("gemini api response completed")
-#             logger.warning(response)
-#             logger.warning("next call ready")
-#             logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-#             if len(response.candidates[0].content.parts) >1:
-#                 response, backend_details = handel_gemini15_parallel_func(handle_api_response,
-#                                                                         response,
-#                                                                         message_placeholder,
-#                                                                         api_requests_and_responses,
-#                                                                         backend_details)
-#             else:
-#                 response = response.candidates[0].content.parts[0]
-
-
-#         except AttributeError as e:
-#             logger.warning(e)
-#             function_calling_in_process = False
-#     return response,backend_details
-
-# def handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent):
-#     logger.warning("Starting parallal function resonse loop")
-#     global stringoutputcount
-#     parts=[]
-#     function_parts = []
-#     for response in response.candidates[0].content.parts:
-#         logger.warning("Function loop starting")
-#         logger.warning(response)
-#         params = {}
-#         try:
-#             for key, value in response.function_call.args.items():
-#                 params[key] = value
-#         except AttributeError:
-#             continue
-                
-#         logger.warning("Prams processing done")
-#         logger.warning(response)
-#         logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
-#         # logger.warning(params)
-
-#         function_name = response.function_call.name
-
-#         api_response = handle_external_function(api_requests_and_responses, params, function_name)
-
-#         logger.warning("Function Response complete")
-#         stringoutputcount = stringoutputcount + len(str(api_response))
-#         logger.warning(f"""String output count is {stringoutputcount}""")
-#         logger.warning(api_response)
-#         function_parts.append(response)
-#         parts.append(types.Part.from_function_response(
-#                     name=function_name,
-#                     response={
-#                         "result": api_response,
-#                     },
-#                     ),
-#                 )
-
-#         backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-
-#     logger.warning("Making gemini call for api response")
-
-#     functioncontent.append(function_parts)
-#     functioncontent.append(parts)
-#     response = handle_gemini20_chat(functioncontent)
-
-#     logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-#     #testing
-#     st.session_state.aicontent.append(response.candidates[0].content)
-#     #testing
-
-#     if len(response.candidates[0].content.parts) >1:
-#         response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response,
-#                                                                 response,
-#                                                                         message_placeholder,
-#                                                                         api_requests_and_responses,
-#                                                                         backend_details, functioncontent)
-
-            
-#     logger.warning("gemini api response completed")
-#     return response,backend_details, functioncontent
-
-# def handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent):
-#     response = response.candidates[0].content.parts[0]
-#     global stringoutputcount
-#     logger.warning(response)
-#     logger.warning("First Resonse done")
-
-#     function_calling_in_process = True
-#     while function_calling_in_process:
-#         try:
-#             logger.warning("Function loop starting")
-#             params = {}
-#             for key, value in response.function_call.args.items():
-#                 params[key] = value
-                    
-#             logger.warning("Prams processing done")
-#             logger.warning(response)
-#             logger.warning(f"""FunctionName: {response.function_call.name} Params: {params}""")
-#             # logger.warning(params)
-
-#             function_name = response.function_call.name
-
-#             api_response = handle_external_function(api_requests_and_responses, params, function_name)
-
-#             logger.warning("Function Response complete")
-#             stringoutputcount = stringoutputcount + len(str(api_response))
-#             logger.warning(f"""String output count is {stringoutputcount}""")
-#             logger.warning(api_response)
-#             logger.warning("Making gemini call for api response")
-            
-#             part = types.Part.from_function_response(
-#                             name=function_name,
-#                             response={
-#                                 "result": api_response,
-#                             },
-#             )
-
-#             functioncontent.append(response)
-#             functioncontent.append(part)
-#             response = handle_gemini20_chat_single(functioncontent)
-
-
-
-#             logger.warning("Function Response complete")
-
-
-#             backend_details = handle_api_response(message_placeholder, api_requests_and_responses, backend_details)
-                    
-#             logger.warning("gemini api response completed")
-#             logger.warning(response)
-#             logger.warning("next call ready")
-#             logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-#             #testing
-#             st.session_state.aicontent.append(response.candidates[0].content)
-#             #testing
-
-#             if len(response.candidates[0].content.parts) >1:
-#                 response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response,
-#                                                                         response,
-#                                                                         message_placeholder,
-#                                                                         api_requests_and_responses,
-#                                                                         backend_details, functioncontent)
-#             else:
-#                 response = response.candidates[0].content.parts[0]
-
-
-#         except AttributeError as e:
-#             logger.warning(e)
-#             function_calling_in_process = False
-#     return response,backend_details, functioncontent
 
 
 def handle_external_function(api_requests_and_responses, params, function_name):
@@ -352,115 +132,7 @@ def handle_external_function(api_requests_and_responses, params, function_name):
                 
     return api_response
 
-# @retry(wait=wait_random_exponential(multiplier=1, max=60))
-# def handle_gemini15_chat(parts):
-#     logger.warning("Making actual multi gemini call")
-#     response = st.session_state.chat15.send_message(
-#                 parts
-#     )
-#     logger.warning("Multi call succeeded")
-#     logger.warning(response)
-#     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    
-#     try:
-#         logger.warning("Adding messages to session state")
-#         full_response = response.text
-#         st.session_state.messages.append({
-#             "role": "assistant",
-#             "content": full_response,
-#             "md5has" : helpercode.get_md5_hash(full_response)
-#         })
-#     except Exception as e:
-#         logger.error(e)
-#     logger.warning("sending response back")
-#     return response
 
-# @retry(wait=wait_random_exponential(multiplier=1, max=60))
-# def handle_gemini15_chat_single(part):
-#     logger.warning("Making actual single gemini call")
-#     response = st.session_state.chat15.send_message(
-#                 part
-#     )
-#     logger.warning("Single call succeeded")
-#     logger.warning(response)
-#     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    
-#     try:
-#         logger.warning("Adding messages to session state")
-#         full_response = response.text
-#         st.session_state.messages.append({
-#             "role": "assistant",
-#             "content": full_response,
-#             "md5has" : helpercode.get_md5_hash(full_response)
-#         })
-#     except Exception as e:
-#         logger.error(e)
-#     logger.warning("sending response back")
-#     return response
-
-# @retry(wait=wait_random_exponential(multiplier=1, max=60))
-# def handle_gemini20_chat(functioncontent):
-#     logger.warning("Making actual multi gemini call")
-#     # st.session_state.aicontent.append(function_parts)
-#     # st.session_state.aicontent.append(parts)
-#     # functioncontent.append(function_parts)
-#     # functioncontent.append(parts)
-#     try:
-#         response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
-#                                                             #   contents=st.session_state.aicontent,
-#                                                               contents=functioncontent,
-#                                                               config=generate_config_20)
-#     except Exception as e:
-#         logger.error(e)
-#         raise e
-#     logger.warning("Multi call succeeded")
-#     logger.warning(response)
-#     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    
-#     try:
-#         logger.warning("Adding messages to session state")
-#         full_response = response.text
-#         st.session_state.messages.append({
-#             "role": "assistant",
-#             "content": full_response,
-#             "md5has" : helpercode.get_md5_hash(full_response)
-#         })
-#     except Exception as e:
-#         logger.error(e)
-#     logger.warning("sending response back")
-#     return response
-
-# @retry(wait=wait_random_exponential(multiplier=1, max=60))
-# def handle_gemini20_chat_single(functioncontent):
-#     logger.warning("Making actual single gemini call")
-#     # st.session_state.aicontent.append(response)
-#     # st.session_state.aicontent.append(part)
-#     # functioncontent.append(response)
-#     # functioncontent.append(part)
-#     try:
-#         response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
-#                                                             #   contents=st.session_state.aicontent,
-#                                                               contents=functioncontent,
-#                                                               config=generate_config_20)
-#     except Exception as e:
-#         logger.error(e)
-#         raise e
-#     logger.warning("Single call succeeded")
-#     logger.warning(response)
-#     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-    
-#     try:
-#         logger.warning("Adding messages to session state")
-#         full_response = response.text
-#         st.session_state.messages.append({
-#             "role": "assistant",
-#             "content": full_response,
-#             "md5has" : helpercode.get_md5_hash(full_response)
-#         })
-#     except Exception as e:
-#         logger.error(e)
-#     logger.warning("sending response back")
-#     return response
 
 def display_restore_messages(logger):
     logger.warning("Checking if messages to restore")
@@ -670,163 +342,7 @@ def handle_api_response(message_placeholder, api_requests_and_responses, backend
         st.markdown(backend_details)
     return backend_details
 
-# def handle_gemini20(prompt):
-#     logger.warning("Starting Gemini 2.0")
-#     global stringoutputcount
 
-#     # client = genai.Client(
-#     #     vertexai=True,
-#     #     project=PROJECT_ID,
-#     #     location=LOCATION
-#     # )
-
-#     # if "chat" not in st.session_state:
-#     #     st.session_state.chat = client
-    
-#     # if "aicontent" not in st.session_state:
-#     #     st.session_state.aicontent = []
-    
-#     stringoutputcount = 0
-
-#     # if prompt := st.chat_input("What is up?"):
-
-#     #     # # Display user message in chat message container
-#     #     with st.chat_message("user"):
-#     #         st.markdown(prompt)
-
-
-#     # Add user message to chat history
-#     logger.warning(f"""Model is: {st.session_state.modelname}, Prompt is: {prompt}""")
-
-
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     with st.chat_message("assistant"):
-#         message_placeholder = st.empty()
-#         full_response = ""
-
-
-#         logger.warning("Configuring prompt")
-#         st.session_state.aicontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
-#         functioncontent = []
-#         functioncontent.append(types.Content(role='user', parts=[types.Part(text=prompt+PROMPT_ENHANCEMENT )]))
-
-#         evaluationagent.evaluation_agent(prompt)
-
-#         logger.warning("Conversation history start")
-#         logger.warning(st.session_state.aicontent)
-#         logger.warning("Conversation history end")
-#         logger.warning("Prompt configured, calling Gemini...")
-#         response = st.session_state.chat.models.generate_content(model=st.session_state.modelname,
-#                                                             contents=st.session_state.aicontent,
-#                                                             config=generate_config_20)
-
-#         logger.warning("Gemini called, This is the start")
-#         logger.warning(response)
-#         logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-#         logger.warning("The start is done")
-
-#         logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-
-#         api_requests_and_responses = []
-#         backend_details = ""
-#         #testing
-#         st.session_state.aicontent.append(response.candidates[0].content)
-#         #testing
-#         if len(response.candidates[0].content.parts) >1:
-#             response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
-
-
-#         else:
-#             response, backend_details, functioncontent = handle_gemini20_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details, functioncontent)
-
-#         time.sleep(3)
-        
-#         full_response = response.text
-#         # st.session_state.aicontent.append(types.Content(role='model', parts=[types.Part(text=full_response)]))
-#         with message_placeholder.container():
-#             st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-#             with st.expander("Function calls, parameters, and responses:"):
-#                 st.markdown(backend_details)
-
-#         st.session_state.messages.append(
-#             {
-#                 "role": "assistant",
-#                 "content": full_response,
-#                 "backend_details": backend_details,
-#                 "md5has" : helpercode.get_md5_hash(full_response)
-#             }
-#         )
-#         logger.warning(f"""Total string output count is {stringoutputcount}""")
-#         logger.warning(st.session_state.aicontent)
-#         logger.warning("This is the end of Gemini 2.0")
-
-
-# def handle_gemini15(prompt):
-#     logger.warning("Starting Gemini 1.5")
-#     vertexai.init(project=PROJECT_ID, location=LOCATION)
-#     # model = GenerativeModel(
-#     #     # "gemini-1.5-pro-002",
-#     #     st.session_state.modelname,
-#     #     system_instruction=[SYSTEM_INSTRUCTION],
-#     #     tools=[market_query_tool],
-#     # )
-
-
-#     response=None
-
-
-#     # if "chat15" not in st.session_state:
-#     #     st.session_state.chat15 = model.start_chat()
-
-#     # if prompt := st.chat_input("What is up?"):
-
-#     #     # # Display user message in chat message container
-#     #     with st.chat_message("user"):
-#     #         st.markdown(prompt)
-
-
-#     # Add user message to chat history
-
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     with st.chat_message("assistant"):
-#         message_placeholder = st.empty()
-#         full_response = ""
-        
-#         response = st.session_state.chat15.send_message(prompt + PROMPT_ENHANCEMENT,generation_config=generation_config,
-#         safety_settings=safety_settings)
-#         logger.warning("This is the start")
-#         logger.warning(response)
-#         logger.warning(f"""Tokens in use: {response.usage_metadata}""")
-#         logger.warning("The start is done")
-
-#         logger.warning(f"""Length of functions is {len(response.candidates[0].content.parts)}""")
-
-#         api_requests_and_responses = []
-#         backend_details = ""
-#         api_response = ""
-#         if len(response.candidates[0].content.parts) >1:
-#             response, backend_details = handel_gemini15_parallel_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
-
-
-#         else:
-#             response, backend_details = handle_gemini15_serial_func(handle_api_response, response, message_placeholder, api_requests_and_responses, backend_details)
-
-#         time.sleep(3)
-
-#         full_response = response.text
-#         with message_placeholder.container():
-#             st.markdown(full_response.replace("$", r"\$"))  # noqa: W605
-#             with st.expander("Function calls, parameters, and responses:"):
-#                 st.markdown(backend_details)
-
-#         st.session_state.messages.append(
-#             {
-#                 "role": "assistant",
-#                 "content": full_response,
-#                 "backend_details": backend_details,
-#                 "md5has" : helpercode.get_md5_hash(full_response)
-#             }
-#         )
 
 
 
@@ -903,6 +419,9 @@ def display_sidebar(logger, view_systeminstruction, USE_AUTHENTICATION, get_chat
             init_chat_session(st.session_state.gemini20, st.session_state.gemini15)
             st.rerun()
         st.header("Debug")
+
+        if st.button("Help"):
+            view_help()
         if st.button("Reload"):
             pass
         if st.button("System Instruction"):

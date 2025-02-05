@@ -86,7 +86,7 @@ generate_config_evalagent = types.GenerateContentConfig(
       category="HARM_CATEGORY_HARASSMENT",
       threshold="OFF"
     )],
-    system_instruction=[types.Part.from_text(SYSTEM_INSTRUCTION)],
+    system_instruction=[types.Part.from_text(text=SYSTEM_INSTRUCTION)],
     tools= [evalagent_20_tool],
 )
 

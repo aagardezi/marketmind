@@ -68,7 +68,7 @@ def handel_gemini20_parallel_func(handle_api_response, response, message_placeho
     st.session_state.aicontent.append(response.candidates[0].content)
     #testing
 
-    if len(response.candidates[0].content.parts) >1:
+    if len(response.candidates[0].content.parts) >=1:
         response, backend_details, functioncontent = handel_gemini20_parallel_func(handle_api_response,
                                                                 response,
                                                                         message_placeholder,

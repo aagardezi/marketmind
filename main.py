@@ -28,7 +28,7 @@ import helperalphavantage
 import helpercode
 import helperstreamlit
 
-import evaluationagent
+
 import gemini20handler
 import gemini15handler
 
@@ -294,7 +294,7 @@ generate_config_20 = types.GenerateContentConfig(
       category="HARM_CATEGORY_HARASSMENT",
       threshold="OFF"
     )],
-    system_instruction=[types.Part.from_text(SYSTEM_INSTRUCTION)],
+    system_instruction=[types.Part.from_text(text=SYSTEM_INSTRUCTION)],
     tools= [market_query20_tool],
 )
 

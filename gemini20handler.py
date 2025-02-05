@@ -171,16 +171,16 @@ def handle_gemini20_chat(functioncontent, logger, generate_config_20):
     logger.warning(response)
     logger.warning(f"""Tokens in use: {response.usage_metadata}""")
     
-    try:
-        logger.warning("Adding messages to session state")
-        full_response = response.text
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": full_response,
-            "md5has" : helpercode.get_md5_hash(full_response)
-        })
-    except Exception as e:
-        logger.error(e)
+    # try:
+    #     logger.warning("Adding messages to session state")
+    #     full_response = response.text
+    #     st.session_state.messages.append({
+    #         "role": "assistant",
+    #         "content": full_response,
+    #         "md5has" : helpercode.get_md5_hash(full_response)
+    #     })
+    # except Exception as e:
+    #     logger.error(e)
     logger.warning("sending response back")
     return response
 

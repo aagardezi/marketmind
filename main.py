@@ -22,11 +22,13 @@ import geminifunctionfinhub
 import gemini20functionfinhub
 import gemini20functiongeneral
 import gemini20functionalphavantage
+import gemini20functionshareprice
 
 import helperfinhub
 import helperalphavantage
 import helpercode
 import helperstreamlit
+import helperfunctionshareprice
 
 
 import gemini20handler
@@ -129,6 +131,14 @@ def handle_external_function(api_requests_and_responses, params, function_name):
         api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )
+    
+    if function_name in helperfunctionshareprice.function_handler.keys():
+        logger.warning("share proce function found")
+        api_response = helperfunctionshareprice.function_handler[function_name](params)
+        api_requests_and_responses.append(
+                                [function_name, params, api_response]
+                        )
+    
                 
     return api_response
 
@@ -186,6 +196,7 @@ market_query20_tool = types.Tool(
         gemini20functionfinhub.financials_reported,
         gemini20functionfinhub.sec_filings,
         gemini20functiongeneral.current_date,
+        gemini20functionshareprice.shareprice
         # gemini20functionalphavantage.monthly_stock_price,
         # gemini20functionalphavantage.market_sentiment,
     ],

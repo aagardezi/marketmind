@@ -3,6 +3,7 @@ from google.genai import types
 import base64
 import helpercode
 import streamlit as st
+from tenacity import retry, wait_random_exponential
 
 
 
@@ -51,12 +52,18 @@ def shareprice(params):
     system_instruction=[types.Part.from_text(text="""Only give a one line response with the share price""")],
   )
 
-  response =client.models.generate_content(
+  response = gemini_call(client, model, contents, generate_content_config)
+  
+  return {'share price': response.candidates[0].content.parts[0].text}
+
+@retry(wait=wait_random_exponential(multiplier=1, max=60))
+def gemini_call(client, model, contents, generate_content_config):
+    response =client.models.generate_content(
     model = model,
     contents = contents,
     config = generate_content_config)
-  
-  return {'share price': response.candidates[0].content.parts[0].text}
+      
+    return response
 
 
 function_handler = {

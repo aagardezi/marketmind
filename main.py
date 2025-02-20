@@ -28,7 +28,7 @@ import helperfinhub
 import helperalphavantage
 import helpercode
 import helperstreamlit
-import helperfunctionshareprice
+import helpersharepricefunction
 
 
 import gemini20handler
@@ -132,9 +132,9 @@ def handle_external_function(api_requests_and_responses, params, function_name):
                                 [function_name, params, api_response]
                         )
     
-    if function_name in helperfunctionshareprice.function_handler.keys():
+    if function_name in helpersharepricefunction.function_handler.keys():
         logger.warning("share proce function found")
-        api_response = helperfunctionshareprice.function_handler[function_name](params)
+        api_response = helpersharepricefunction.function_handler[function_name](params)
         api_requests_and_responses.append(
                                 [function_name, params, api_response]
                         )

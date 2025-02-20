@@ -12,7 +12,7 @@ LOCATION = "us-central1"
 def shareprice(params):
   client = genai.Client(
       vertexai=True,
-      project=PendingDeprecationWarning,
+      project=PROJECT_ID,
       location=LOCATION,
   )
 

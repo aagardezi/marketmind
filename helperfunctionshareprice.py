@@ -1,16 +1,23 @@
 from google import genai
 from google.genai import types
 import base64
+import helpercode
+import streamlit as st
+
+
+
+PROJECT_ID = helpercode.get_project_id()
+LOCATION = "us-central1"
 
 def shareprice(params):
   client = genai.Client(
       vertexai=True,
-      project="cloud-llm-preview2",
-      location="us-central1",
+      project=PendingDeprecationWarning,
+      location=LOCATION,
   )
 
 
-  model = "gemini-2.0-flash-001"
+  model = st.session_state.modelname
   contents = [
     types.Content(
       role="user",

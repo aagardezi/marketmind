@@ -71,7 +71,7 @@ def select_model():
     logger.warning("Selecting Model")
     modelname = st.selectbox(
         "Select the Gemini version you would like to use",
-        ("gemini-1.5-pro-002", "gemini-1.5-flash-002", "gemini-2.0-flash-exp", "gemini-2.0-flash-001"),
+        ("gemini-1.5-pro-002", "gemini-1.5-flash-002", "gemini-2.0-flash-exp", "gemini-2.0-flash-001", "gemini-2.5-pro-preview-05-06"),
         index=2,
         placeholder="Select a Model",
     )
